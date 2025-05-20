@@ -17,7 +17,7 @@ const App = () => {
   const [progress, setProgress] = useState(0);
 
   const pageSize = 9;
-  const apiKey = import.meta.env.VITE_NEWS_API_KEY;
+  
 
   const toggleMode = () => {
     if (mode === 'dark') {
