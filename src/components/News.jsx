@@ -49,7 +49,7 @@ const News = (props) => {
   const fetchMoreData = async () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=bb77591fb68a41a39a7be3881de44fe2&page=${nextPage}&pageSize=${props.pageSize}`;
+    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${process.env.VITE_NEWS_API_KEY}&page=${nextPage}&pageSize=${props.pageSize}`;
 
     try {
       const response = await fetch(url);
