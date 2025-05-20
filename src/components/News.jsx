@@ -183,7 +183,7 @@ const News = (props) => {
 
   const updateNews = async () => {
     props.setProgress(10);
-    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=bb77591fb68a41a39a7be3881de44fe2&page=${page}&pageSize=${props.pageSize}`;
+    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${process.env.VITE_NEWS_API_KEY}&page=${page}&pageSize=${props.pageSize}`;
 
     try {
       setLoading(true);

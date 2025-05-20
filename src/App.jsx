@@ -1,4 +1,4 @@
-import React from 'react';
+//import React from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import News from './components/News';
@@ -39,7 +39,7 @@ const App = () => {
       />
       <Routes>
         <Route exact
-          path="/home" element={<News
+          path="/" element={<News
             setProgress={setProgress}
             apikey={apiKey}
             key="general"
