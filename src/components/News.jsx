@@ -78,6 +78,7 @@ const News = (props) => {
       {loading && articles.length === 0 && (
         <Spinner toggleMode={props.toggleMode} mode={props.mode} />
       )}
+      {articles && articles.length > 0 && (
 
       <InfiniteScroll
         dataLength={articles.length}
@@ -99,6 +100,7 @@ const News = (props) => {
           ))}
         </div>
       </InfiniteScroll>
+      )}
     </div>
   );
 };
