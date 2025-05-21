@@ -11,6 +11,7 @@ const App = () => {
   const [mode, setMode] = useState('light');
   const [progress, setProgress] = useState(0);
   const apiKey = import.meta.env.VITE_NEWS_API_KEY;
+  console.log(apiKey);
   
 
   const pageSize = 9;
