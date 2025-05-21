@@ -113,7 +113,7 @@ News.propTypes = {
   country: PropTypes.string,
   pageSize: PropTypes.number,
   category: PropTypes.string,
-  apikey: PropTypes.string.isRequired,
+  apiKey: PropTypes.string.isRequired,
   setProgress: PropTypes.func.isRequired,
   toggleMode: PropTypes.func,
   mode: PropTypes.string,
