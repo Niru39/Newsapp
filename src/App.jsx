@@ -37,7 +37,7 @@ const App = () => {
       />
       <Routes>
         <Route exact
-          path="/" element={<News
+          path="#" element={<News
             setProgress={setProgress}
             apiKey={apiKey}
             key="general"
