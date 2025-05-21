@@ -10,10 +10,8 @@ import React, { useState } from 'react';
 const App = () => {
   const [mode, setMode] = useState('light');
   const [progress, setProgress] = useState(0);
-  const apiKey = import.meta.env.VITE_API_KEY;
-  console.log(import.meta.env);
-  console.log(apiKey);
-
+  const apiKey = import.meta.env.VITE_NEWS_API_KEY;
+  
 
   const pageSize = 9;
 
