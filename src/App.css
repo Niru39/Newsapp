@@ -1,16 +1,19 @@
-/* Base Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f9f9fb;
   color: #222;
   transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0;
-  padding: 0;
+  
 }
 
-.App {
-  text-align: center;
-}
 
 /* Sticky Header */
 .navbar {
@@ -43,16 +46,17 @@ body {
 }
 
 .navbar-brand {
+  width: 140px;
   font-size: 1.5rem;
   font-weight: bold;
   text-decoration: none;
   color: white;
+  
 }
 
 .navbar-links {
   display: flex;
-  align-items: center;
-  gap: 20px;
+  gap: 1.5rem;
 }
 
 .nav-link {
@@ -209,6 +213,11 @@ body {
   background-color: #0056b3;
 }
 
+p {
+  text-align: center;
+  margin-top: 1rem;
+}
+
 
 
 /* Dark Mode */
@@ -251,75 +260,32 @@ body.dark-mode .read-more-btn:hover {
 
 
 
-/* Responsive Media Queries */
 
-/* Small devices (phones, < 600px) */
-@media only screen and (max-width: 600px) {
+
+
+@media (max-width: 768px) {
   .navbar-links {
-    display: none;
+    display: none; 
     flex-direction: column;
-    width: 120px;
-    position: absolute;
-    top: 70px;
-    left: 0;
     background-color: #0066cc;
-    gap:0;
+    position: absolute;
+    top: 60px; 
+    right: 0;
+    width: 100%;
+    border-radius: 0 0 0 8px;
   }
 
   .navbar-links.active {
-    display: flex;
-  }
-
-  .nav-link {
-    margin: 10px 0;
+    display: flex; 
   }
 
   .navbar-toggle {
     display: block;
   }
+}
 
-  .news-container {
-    flex-direction: column;
-    margin: 20px;
-  }
-
+@media (max-width: 480px) {
   .news-card {
-    width: 90%;
-    max-width: 350px;
-  }
-
-}
-
-
-/* Medium devices (tablets, 600px and up) */
-@media only screen and (min-width: 600px) {
-  .navbar-links {
-    flex-direction: row;
-    position: static;
-  }
-
-  .navbar-toggle {
-    display: none;
-  }
-}
-
-/* Larger tablets */
-@media only screen and (min-width: 768px) {
-  .news-title {
-    font-size: 1.8rem;
-  }
-}
-
-/* Laptops */
-@media only screen and (min-width: 992px) {
-  .news-title {
-    font-size: 2.2rem;
-  }
-}
-
-/* Desktops */
-@media only screen and (min-width: 1200px) {
-  .news-wrapper {
-    padding: 100px 40px 80px;
+    width: 100%;
   }
 }

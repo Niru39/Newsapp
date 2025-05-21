@@ -84,6 +84,7 @@ const Navbar = ({ toggleMode, mode }) => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link className="navbar-brand" to="/">NewsToday</Link>
+         <Link className="nav-link" to="/home" onClick={closeMenu}></Link>
 
         {/* Links */}
         <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>

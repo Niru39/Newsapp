@@ -6,9 +6,6 @@ import PropTypes from 'prop-types'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import React, { useEffect, useState } from 'react';
 
-
-
-
 const News = (props) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +36,7 @@ const News = (props) => {
       setTotalResults(parsedData.totalResults);
       setLoading(false);
       props.setProgress(100);
-      
+
     } catch (error) {
       console.error(error.message);
       setLoading(false);
@@ -57,7 +54,7 @@ const News = (props) => {
 
       setArticles(articles.concat(parsedData.articles));
       setTotalResults(parsedData.totalResults);
-      
+
     } catch (error) {
       console.error("Error fetching more data:", error);
     }
@@ -66,7 +63,7 @@ const News = (props) => {
   useEffect(() => {
     document.title = `${capitalizeFirstLetter(props.category)} - NewsToday`;
     updateNews();
-    
+
   }, [props.category]);
 
   return (
@@ -75,50 +72,54 @@ const News = (props) => {
         Latest News - {capitalizeFirstLetter(props.category)}
       </h2>
 
-      {loading && articles.length === 0 && (
-        <Spinner toggleMode={props.toggleMode} mode={props.mode} />
-      )}
-      {articles && articles.length > 0 && (
+      {loading && <Spinner toggleMode={props.toggleMode} mode={props.mode} />}
 
-      <InfiniteScroll
-        dataLength={articles.length}
-        next={fetchMoreData}
-        hasMore={articles.length < totalResults}
-        loader={<Spinner toggleMode={props.toggleMode} mode={props.mode} />}
-      >
-        <div className="news-container">
-          {articles.map((element) => (
-            <NewsItem
-              key={element.url}
-              title={element.title ? element.title.slice(0, 45) : ''}
-              description={element.description ? element.description.slice(0, 88) : ''}
-              imageurl={element.urlToImage}
-              newsurl={element.url}
-              author={element.author}
-              date={element.publishedAt}
-            />
-          ))}
-        </div>
-      </InfiniteScroll>
+      {!loading && articles.length > 0 && (
+        <InfiniteScroll
+          dataLength={articles.length}
+          next={fetchMoreData}
+          hasMore={articles.length < totalResults}
+          loader={<Spinner toggleMode={props.toggleMode} mode={props.mode} />}
+        >
+          <div className="news-container">
+            {articles.map((element) => (
+              <NewsItem
+                key={element.url}
+                title={element.title ? element.title.slice(0, 45) : ''}
+                description={element.description ? element.description.slice(0, 88) : ''}
+                imageurl={element.urlToImage}
+                newsurl={element.url}
+                author={element.author}
+                date={element.publishedAt}
+              />
+            ))}
+          </div>
+        </InfiniteScroll>
+      )}
+
+      {!loading && articles.length >= totalResults && (
+        <p> You've reached the end of the news!
+        </p>
       )}
     </div>
-  );
+  )
 };
 
-News.defaultProps = {
-  country: 'US',
-  pageSize: 6,
-  category: 'general',
-};
 
-News.propTypes = {
-  country: PropTypes.string,
-  pageSize: PropTypes.number,
-  category: PropTypes.string,
-  apiKey: PropTypes.string.isRequired,
-  setProgress: PropTypes.func.isRequired,
-  toggleMode: PropTypes.func,
-  mode: PropTypes.string,
-};
+  News.defaultProps = {
+    country: 'US',
+    pageSize: 6,
+    category: 'general',
+  };
 
-export default News;
+  News.propTypes = {
+    country: PropTypes.string,
+    pageSize: PropTypes.number,
+    category: PropTypes.string,
+    apiKey: PropTypes.string.isRequired,
+    setProgress: PropTypes.func.isRequired,
+    toggleMode: PropTypes.func,
+    mode: PropTypes.string,
+  };
+
+  export default News;
