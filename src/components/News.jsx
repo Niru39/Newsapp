@@ -1,4 +1,4 @@
-//import React, { Component } from 'react';
+
 import NewsItem from './Newsitem';
 import '../App.css';
 import Spinner from './Spinner';
