@@ -25,12 +25,19 @@ const News = (props) => {
       const response = await fetch(url);
       props.setProgress(40);
 
-      if (response.status === 429) {
-        throw new Error('Too many requests. Please try again later.');
-      }
+      if (!response.ok) {
+      // Handle HTTP errors here, including 426
+      throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+    }
+
+      
 
       const parsedData = await response.json();
       props.setProgress(70);
+
+      if (!parsedData.articles || !Array.isArray(parsedData.articles)) {
+      throw new Error('Invalid data format: articles not found');
+    }
 
       setArticles(parsedData.articles);
       setTotalResults(parsedData.totalResults);
@@ -50,7 +57,14 @@ const News = (props) => {
 
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+    }
       const parsedData = await response.json();
+      
+      if (!parsedData.articles || !Array.isArray(parsedData.articles)) {
+      throw new Error('Invalid data format: articles not found');
+    }
 
       setArticles(articles.concat(parsedData.articles));
       setTotalResults(parsedData.totalResults);
