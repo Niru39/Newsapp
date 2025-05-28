@@ -729,6 +729,10 @@ body.dark-mode .read-more-btn:hover {
   margin-top: 20px;
   color: #444;
 }
+body.dark-mode .news-page,
+body.dark-mode .news-sidebar{
+  background-color: #1e1e2f;
+}
 
 body.dark-mode .end-message, 
 body.dark-mode .sidebar-toggle-btn,
