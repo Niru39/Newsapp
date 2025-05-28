@@ -13,13 +13,13 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
 
 
   // For Weather widget
-  const [country, setCountry] = useState('Nepal');
+  const [city, setCity] = useState('Kathmandu');
   const [weatherData, setWeatherData] = useState(null);
   const [loadingWeather, setLoadingWeather] = useState(false);
   const [weatherError, setWeatherError] = useState(null);
 
   // For Stocks widget
-  const [stockSymbol, setStockSymbol] = useState('NRN');
+  const [stockSymbol, setStockSymbol] = useState('AAPL');
   const [stockData, setStockData] = useState(null);
   const [loadingStock, setLoadingStock] = useState(false);
   const [stockError, setStockError] = useState(null);
@@ -44,19 +44,19 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
     setEmail('');
   };
 
-  // Fetch Weather data when country changes
+  // Fetch Weather data when city changes
   useEffect(() => {
     const fetchWeather = async () => {
-      if (!country) return;
+      if (!city) return;
       setLoadingWeather(true);
       setWeatherError(null);
       try {
         const res = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-            country
+            city
           )}&units=metric&appid=${weatherapiKey}`
         );
-        if (!res.ok) throw new Error('Country not found');
+        if (!res.ok) throw new Error('City not found');
         const data = await res.json();
         setWeatherData({
           temp: Math.round(data.main.temp),
@@ -69,7 +69,7 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
       setLoadingWeather(false);
     };
     fetchWeather();
-  }, [country]);
+  }, [city]);
 
   // Fetch Stock data when stockSymbol changes
   useEffect(() => {
@@ -151,10 +151,10 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
         <h3>Weather</h3>
         <input
           type="text"
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          placeholder="Enter country"
-          aria-label="Country for weather"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          placeholder="Enter city"
+          aria-label="City for weather"
         />
         {loadingWeather ? (
           <p>Loading weather...</p>
@@ -165,7 +165,7 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
             <p>
               {weatherData.description}, {weatherData.temp}°C
             </p>
-            <p>Location: {country}</p>
+            <p>Location: {city}</p>
           </div>
         ) : (
           <p>No weather data</p>
