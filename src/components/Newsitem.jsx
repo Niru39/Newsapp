@@ -1,5 +1,6 @@
 
 import '../App.css'; 
+import { Link } from 'react-router-dom';
 
 const NewsItem =(props)=> {
   
@@ -13,9 +14,9 @@ const NewsItem =(props)=> {
             <h5 className="card-title">{title} ...</h5>
             <p className="card-text">{description}...</p>
             <p className="card-text">By {!author?"Unknown": author} on {new Date(date).toGMTString()}</p>
-            <a href={newsurl} target="_blank" rel="noreferrer" className="read-more-btn">
+            <Link to ={newsurl} target="_blank" rel="noreferrer" className="read-more-btn">
               Read more
-            </a>
+            </Link>
           </div>
         </div>
       </div>

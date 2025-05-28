@@ -1,20 +1,25 @@
-//import React from 'react';
 import './App.css';
-import Navbar from './components/Navbar';
+import Navbar from './components/navbar';
 import News from './components/News';
+import SearchNews from './components/Search';
+
 import { Routes, Route } from 'react-router-dom';
 import Footer from './components/Footer';
 import LoadingBar from "react-top-loading-bar";
 import React, { useState } from 'react';
+import NewsBanner from "./components/Newsbanner";
+import AboutUs from './components/About';
+
 
 const App = () => {
   const [mode, setMode] = useState('light');
   const [progress, setProgress] = useState(0);
   const apiKey = import.meta.env.VITE_NEWS_API_KEY;
-  
-  
-
+  const weatherapiKey = import.meta.env.VITE_WEATHER_API_KEY;
+  const stockapiKey = import.meta.env.VITE_STOCK_API_KEY;
   const pageSize = 9;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
 
   const toggleMode = () => {
@@ -27,144 +32,89 @@ const App = () => {
     }
   };
 
+
+
   return (
     <div>
-      <Navbar toggleMode={toggleMode} mode={mode} />
+      <Navbar apiKey={apiKey} toggleMode={toggleMode} mode={mode} />
       <LoadingBar
         color="#f11946"
         progress={progress}
         onLoaderFinished={() => setProgress(0)}
       />
-      <Routes>
-        <Route exact
-          path="/home" element={<News
-            setProgress={setProgress}
-            apiKey={apiKey}
-            key="general"
-            mode={mode}
-            pageSize={pageSize}
-            country="us"
-            category="general"
+
+    
+      <main>
+        <NewsBanner apiKey={apiKey} country='us' />
+       
+
+        <Routes>
+          {/* Dynamic category route */}
+          <Route
+            path="/category/:categoryName"
+            element={
+              <News
+                setProgress={setProgress}
+                apiKey={apiKey}
+                mode={mode}
+                pageSize={pageSize}
+                country="us"
+                weatherapiKey={weatherapiKey}
+                stockapiKey={stockapiKey}
+              />
+            }
           />
-          }
-        />
-        <Route exact
-          path="/about"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="about"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="general"
-            />
-          }
-        />
-        <Route exact
-          path="/business"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="business"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="business"
-            />
-          }
-        />
-        <Route exact
-          path="/general"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="general"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="general"
-            />
-          }
-        />
-        <Route exact
-          path="/entertainment"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="entertainment"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="entertainment"
-            />
-          }
-        />
-        <Route exact
-          path="/health"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="health"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="health"
-            />
-          }
-        />
-        <Route exact
-          path="/science"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="science"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="science"
-            />
-          }
-        />
-        <Route exact
-          path="/sports"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="sports"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="sports"
-            />
-          }
-        />
-        <Route exact
-          path="/technology"
-          element={
-            <News
-              setProgress={setProgress}
-              apiKey={apiKey}
-              key="technology"
-              mode={mode}
-              pageSize={pageSize}
-              country="us"
-              category="technology"
-            />
-          }
-        />
-      </Routes>
-      <Footer />
+
+          {/* Dynamic tag route */}
+          <Route
+            path="/tag/:tagName"
+            element={
+              <News
+                setProgress={setProgress}
+                apiKey={apiKey}
+                mode={mode}
+                pageSize={pageSize}
+                country="us"
+                weatherapiKey={weatherapiKey}
+                stockapiKey={stockapiKey}
+              />
+            }
+          />
+
+          {/* Home route (general news) */}
+          <Route
+            path="/"
+            element={
+              <News
+                setProgress={setProgress}
+                apiKey={apiKey}
+                mode={mode}
+                pageSize={pageSize}
+                country="us"
+                query="general"
+                weatherapiKey={weatherapiKey}
+                stockapiKey={stockapiKey}
+              />
+            }
+          />
+
+          {/* Search route */}
+          <Route
+            path="/search"
+            element={<SearchNews apiKey={apiKey} mode={mode} pageSize={pageSize} />}
+          />
+
+         
+
+          {/* About route */}
+          <Route path="/about" element={<AboutUs />} />
+        </Routes>
+      </main>
+      <footer>
+        <Footer />
+      </footer>
     </div>
   );
 };
 
 export default App;
-

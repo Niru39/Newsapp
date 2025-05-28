@@ -1,116 +1,56 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
-import { Link } from 'react-router-dom';
-
-
-
-// // export class Navbar extends Component {
-// //   // Track the menu state
-// //   constructor(props) {
-// //     super(props);
-// //     this.state = {
-// //       isMenuOpen: false, // Initialize the menu state as closed
-// //     };
-// //   }
-
-// //   toggleMenu = () => {
-// //     this.setState(prevState => ({
-// //       isMenuOpen: !prevState.isMenuOpen, // Toggle the menu state
-// //     }));
-// //   };
-
-// //   // Close the menu when a link is clicked
-// //   closeMenu = () => {
-// //     this.setState({ isMenuOpen: false });
-// //   };
-
-// //   render() {
-
-
-
-
-//     return (
-//       <nav className="navbar">
-//         <div className="navbar-container">
-//           <Link className="navbar-brand" to="/">NewsToday</Link>
-
-//           {/* Links */}
-//           <div className={`navbar-links ${this.state.isMenuOpen ? 'active' : ''}`}>
-//             <Link className="nav-link" to="/home" onClick={this.closeMenu}>Home</Link>
-//             <Link className="nav-link" to="/about" onClick={this.closeMenu}>About</Link>
-//             <Link className="nav-link" to="/business" onClick={this.closeMenu}>Business</Link>
-//             <Link className="nav-link" to="/general" onClick={this.closeMenu}>General</Link>
-//             <Link className="nav-link" to="/entertainment" onClick={this.closeMenu}>Entertainment</Link>
-//             <Link className="nav-link" to="/health" onClick={this.closeMenu}>Health</Link>
-//             <Link className="nav-link" to="/sports" onClick={this.closeMenu}>Sports</Link>
-//             <Link className="nav-link" to="/science" onClick={this.closeMenu}>Science</Link>
-//             <Link className="nav-link" to="/technology" onClick={this.closeMenu}>Technology</Link>
-//           </div>
-
-//           {/* Toggle Button for Mobile */}
-//           <button
-//             className="navbar-toggle"
-//             onClick={this.toggleMenu}
-//             aria-label="Toggle Navigation Menu"
-//           >
-//             ☰
-//           </button>
-
-//           {/* Dark Mode Toggle */}
-//           <button className="dark-mode-toggle" onClick={this.props.toggleMode}>
-//             {this.props.mode === 'light' ? 'Enable Dark Mode' : 'Enable Light Mode'}
-//           </button>
-//         </div>
-//       </nav>
-//     );
-//   // }
-// }
-
-// export default Navbar;
-
 
 const Navbar = ({ toggleMode, mode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(prev => !prev);
-  };
+  const toggleMenu = () => setIsMenuOpen(prev => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
 
-  const closeMenu = () => {
-    setIsMenuOpen(false);
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    setSearchTerm("");
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
         <Link className="navbar-brand" to="/">NewsToday</Link>
-         <Link className="nav-link" to="/home" onClick={closeMenu}></Link>
 
-        {/* Links */}
-        <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
-          <Link className="nav-link" to="/home" onClick={closeMenu}>Home</Link>
-          <Link className="nav-link" to="/about" onClick={closeMenu}>About</Link>
-          <Link className="nav-link" to="/business" onClick={closeMenu}>Business</Link>
-          <Link className="nav-link" to="/general" onClick={closeMenu}>General</Link>
-          <Link className="nav-link" to="/entertainment" onClick={closeMenu}>Entertainment</Link>
-          <Link className="nav-link" to="/health" onClick={closeMenu}>Health</Link>
-          <Link className="nav-link" to="/sports" onClick={closeMenu}>Sports</Link>
-          <Link className="nav-link" to="/science" onClick={closeMenu}>Science</Link>
-          <Link className="nav-link" to="/technology" onClick={closeMenu}>Technology</Link>
-        </div>
-
-        {/* Toggle Button for Mobile */}
-        <button
-          className="navbar-toggle"
-          onClick={toggleMenu}
-          aria-label="Toggle Navigation Menu"
-        >
+        <button className="navbar-toggle" onClick={toggleMenu} aria-label="Toggle menu">
           ☰
         </button>
 
-        {/* Dark Mode Toggle */}
+        <div className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
+          <Link className="nav-link" to="/" onClick={closeMenu}>Home</Link>
+          <Link className="nav-link" to="/category/business" onClick={closeMenu}>Business</Link>
+          <Link className="nav-link" to="/category/entertainment" onClick={closeMenu}>Entertainment</Link>
+          <Link className="nav-link" to="/category/health" onClick={closeMenu}>Health</Link>
+          <Link className="nav-link" to="/category/sports" onClick={closeMenu}>Sports</Link>
+          <Link className="nav-link" to="/category/science" onClick={closeMenu}>Science</Link>
+          <Link className="nav-link" to="/category/technology" onClick={closeMenu}>Technology</Link>
+        </div>
+
+        <form onSubmit={handleSearchSubmit} className="search-form" autoComplete="off">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search news..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {/* <button type="submit" className="search-button">🔍</button> */}
+        </form>
+
+       
+
         <button className="dark-mode-toggle" onClick={toggleMode}>
-          {mode === 'light' ? 'Enable Dark Mode' : 'Enable Light Mode'}
+          {mode === 'light' ? '🌙 ' : '☀️ '}
         </button>
       </div>
     </nav>
