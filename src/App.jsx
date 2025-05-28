@@ -1,5 +1,5 @@
 import './App.css';
-import Navbar from './components/navbar';
+import Navbar from './components/Navbar';
 import News from './components/News';
 import SearchNews from './components/Search';
 
