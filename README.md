@@ -42,13 +42,13 @@ Then open your browser at:👉 http://localhost:5173
 ## Scripts
 
 1. Start development server
-npm run dev
+```npm run dev```
 
 2. Build for production
-npm run build
+```npm run build```
 
 3. Preview production build
-npm run preview
+```npm run preview```
 
 ## Built With
 
