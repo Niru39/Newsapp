@@ -1,6 +1,6 @@
 # 📰 NewsApp
 
-A modern and responsive news aggregator built with **React + Vite**, fetching news from [NewsAPI](https://newsapi.org/).  
+A modern and responsive news aggregator built with **React + Vite**, fetching news from [NewsAPI](https://newsapi.org/) , weather from [OpenWeatherMap](https://openweathermap.org/) and stock from [Finnhub] (https://finnhub.io/).  
 Features include category/tag-based filtering, pagination, sidebar with live weather and stock data, and dark/light theme toggle.
 
 ---
