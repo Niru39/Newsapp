@@ -41,13 +41,13 @@ Then open your browser at:👉 http://localhost:5173
 
 ## Scripts
 
-# Start development server
+1. Start development server
 npm run dev
 
-# Build for production
+2. Build for production
 npm run build
 
-# Preview production build
+3. Preview production build
 npm run preview
 
 ## Built With
