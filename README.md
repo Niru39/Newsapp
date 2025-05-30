@@ -1,12 +1,81 @@
-# React + Vite
+# 📰 NewsApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern and responsive news aggregator built with **React + Vite**, fetching news from [NewsAPI](https://newsapi.org/).  
+Features include category/tag-based filtering, pagination, sidebar with live weather and stock data, and dark/light theme toggle.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+##  Features
 
-## Expanding the ESLint configuration
+- Browse by category or search by keyword/tag
+- Country-based top headlines
+- Pagination for easy navigation
+- Sidebar with real-time weather and stock updates
+- Dark/light mode toggle
+- Built with Vite for fast development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+
+
+## Installation & Setup
+
+1. Install dependencies
+
+npm install
+
+2. Create environment variables
+
+Create a .env file in the root directory and add the following:
+
+VITE_NEWS_API_KEY=your_newsapi_key_here
+VITE_WEATHER_API_KEY=your_weatherapi_key_here
+VITE_STOCK_API_KEY=your_stockapi_key_here
+
+3. Start the development server
+
+npm run dev
+
+Then open your browser at:👉 http://localhost:5173
+
+## Project Structure
+
+src/
+│
+├── components/
+│   ├── News.jsx
+│   ├── NewsItem.jsx
+│   ├── Sidebar.jsx
+│   ├── Spinner.jsx
+│   └── Pagination.jsx
+│
+├── App.jsx
+├── main.jsx
+├── App.css
+└── index.css
+
+
+## Scripts
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+## Built With
+
+- React (via Vite)
+
+- React Router DOM
+
+- CSS for styling + themes
+
+- NewsAPI.org
+
+- Finnhub.io
+
+- OpenWeatherMap.org
