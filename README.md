@@ -21,39 +21,23 @@ Features include category/tag-based filtering, pagination, sidebar with live wea
 ## Installation & Setup
 
 1. Install dependencies
-
+```bash
 npm install
+```
 
 2. Create environment variables
 
 Create a .env file in the root directory and add the following:
-
+```
 VITE_NEWS_API_KEY=your_newsapi_key_here
 VITE_WEATHER_API_KEY=your_weatherapi_key_here
 VITE_STOCK_API_KEY=your_stockapi_key_here
-
+```
 3. Start the development server
-
+```
 npm run dev
-
+```
 Then open your browser at:👉 http://localhost:5173
-
-## Project Structure
-
-src/
-│
-├── components/
-│   ├── News.jsx
-│   ├── NewsItem.jsx
-│   ├── Sidebar.jsx
-│   ├── Spinner.jsx
-│   └── Pagination.jsx
-│
-├── App.jsx
-├── main.jsx
-├── App.css
-└── index.css
-
 
 ## Scripts
 
