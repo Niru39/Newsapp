@@ -1,30 +1,30 @@
 import React from 'react';
 import '../App.css';
-// import aboutBanner from './assets/about-banner.jpg';
-// import teamMember1 from './assets/team1.jpg';
-// import teamMember2 from './assets/team2.jpg';
-// import teamMember3 from './src/assets/team3.jpg';
+
+import teamMember1 from '../assets/teamMember1.jpeg';
+import teamMember2 from '../assets/teamMember2.jpeg';
+import teamMember3 from '../assets/teamMember3.jpeg';
 
 const teamMembers = [
   {
     id: 1,
     name: 'Alice Johnson',
     role: 'Editor-in-Chief',
-    
+    photo: teamMember1,
     bio: 'Alice leads our editorial team ensuring top-notch quality and reliability.',
   },
   {
     id: 2,
     name: 'Mark Stevens',
     role: 'Senior Journalist',
-    
+    photo: teamMember2,
     bio: 'Mark covers global politics and investigative stories with passion.',
   },
   {
     id: 3,
     name: 'Linda Martinez',
     role: 'Tech Reporter',
-
+    photo: teamMember3,
     bio: 'Linda keeps us updated on the latest in technology and innovation.',
   },
 ];
@@ -61,8 +61,8 @@ const AboutUs = () => {
               that fosters informed decision-making and meaningful conversations.
             </p>
           </div>
-          </section>
-          <section className='about-section vission'>
+        </section>
+        <section className='about-section vission'>
           <div>
             <h2>Our Vision</h2>
             <p>

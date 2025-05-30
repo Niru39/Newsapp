@@ -218,8 +218,8 @@
 }
 
 .dark-mode-toggle:hover {
-  background-color: #f1f1f1;
-  color: #1976d2;
+  background-color:  #1976d2;
+  
 }
 
 /* 
@@ -398,7 +398,7 @@ body.dark_mode .search-input{
   width: 100%;
   max-width: 300px;
   padding: 15px;
-  background-color: #f9f9fb;
+  background-color: #f1f1f1;
   border: 1px solid #ced4da;
   border-radius: 8px;
   box-sizing: border-box;
