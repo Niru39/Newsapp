@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
   const trendingTags = ['COVID', 'Elections', 'Cannes', 'Marvel', 'Finance'];
   const categories = ['Foods', 'Internet', 'Music', 'Politics', 'Accident', 'Corruption'];
-
   const [email, setEmail] = useState('');
   const [newsletterMsg, setNewsletterMsg] = useState('');
   const navigate = useNavigate();
@@ -135,7 +134,7 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
       <section className="sidebar-section newsletter">
         <h3>Newsletter Signup</h3>
         <form onSubmit={handleSubmit}>
-          <input
+          <input className='newsletter'
             type="email"
             placeholder="Your email"
             value={email}
@@ -149,7 +148,7 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
 
       <section className="sidebar-section widgets">
         <h3>Weather</h3>
-        <input
+        <input className='widget-placeholder'
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
@@ -172,7 +171,7 @@ const Sidebar = ({ isOpen, toggleSidebar, weatherapiKey, stockapiKey }) => {
         )}
 
         <h3>Stocks</h3>
-        <input
+        <input className='widget-placeholder'
           type="text"
           value={stockSymbol}
           onChange={(e) => setStockSymbol(e.target.value.toUpperCase())}

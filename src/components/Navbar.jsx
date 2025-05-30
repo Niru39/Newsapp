@@ -44,7 +44,6 @@ const Navbar = ({ toggleMode, mode }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {/* <button type="submit" className="search-button">🔍</button> */}
         </form>
 
        
