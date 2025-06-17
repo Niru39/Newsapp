@@ -2,7 +2,7 @@ import './App.css';
 import Navbar from './components/Navbar';
 import News from './components/News';
 import SearchNews from './components/Search';
-
+import NewsDetails from './components/NewsDetails';
 import { Routes, Route } from 'react-router-dom';
 import Footer from './components/Footer';
 import LoadingBar from "react-top-loading-bar";
@@ -10,17 +10,15 @@ import React, { useState } from 'react';
 import NewsBanner from "./components/Newsbanner";
 import AboutUs from './components/About';
 
-
 const App = () => {
   const [mode, setMode] = useState('light');
   const [progress, setProgress] = useState(0);
   const apiKey = import.meta.env.VITE_NEWS_API_KEY;
   const weatherapiKey = import.meta.env.VITE_WEATHER_API_KEY;
   const stockapiKey = import.meta.env.VITE_STOCK_API_KEY;
-  const pageSize = 9;
+  const pageSize = 12;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const toggleMode = () => {
     if (mode === 'dark') {
@@ -32,21 +30,23 @@ const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
     }
   };
 
-
-
   return (
     <div>
-      <Navbar apiKey={apiKey} toggleMode={toggleMode} mode={mode} />
+      <Navbar
+        apiKey={apiKey}
+        toggleMode={toggleMode}
+        mode={mode}
+        isSidebarOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+      />
       <LoadingBar
         color="#f11946"
         progress={progress}
         onLoaderFinished={() => setProgress(0)}
       />
 
-    
       <main>
         <NewsBanner apiKey={apiKey} country='us' />
-       
 
         <Routes>
           {/* Dynamic category route */}
@@ -61,6 +61,8 @@ const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
                 country="us"
                 weatherapiKey={weatherapiKey}
                 stockapiKey={stockapiKey}
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
               />
             }
           />
@@ -77,11 +79,13 @@ const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
                 country="us"
                 weatherapiKey={weatherapiKey}
                 stockapiKey={stockapiKey}
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
               />
             }
           />
 
-          {/* Home route (general news) */}
+          {/* Home route - shows multiple sections (handled inside News.jsx) */}
           <Route
             path="/"
             element={
@@ -91,9 +95,10 @@ const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
                 mode={mode}
                 pageSize={pageSize}
                 country="us"
-                query="general"
                 weatherapiKey={weatherapiKey}
                 stockapiKey={stockapiKey}
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
               />
             }
           />
@@ -104,12 +109,17 @@ const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
             element={<SearchNews apiKey={apiKey} mode={mode} pageSize={pageSize} />}
           />
 
-         
+          {/* Article details */}
+          <Route
+            path="/article"
+            element={<NewsDetails apiKey={apiKey} weatherapiKey={weatherapiKey} stockapiKey={stockapiKey} />}
+          />
 
-          {/* About route */}
+          {/* About page */}
           <Route path="/about" element={<AboutUs />} />
         </Routes>
       </main>
+
       <footer>
         <Footer />
       </footer>

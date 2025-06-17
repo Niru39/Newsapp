@@ -1,5 +1,6 @@
 
 import loading from './loading.gif'
+import '../css/Spinner.css';
 
 const Spinner=()=> {
     

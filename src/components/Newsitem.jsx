@@ -1,27 +1,71 @@
-
-import '../App.css'; 
+import '../App.css';
+import '../css/NewsItem.css';
 import { Link } from 'react-router-dom';
 
-const NewsItem =(props)=> {
-  
-    const { title, description, imageurl, newsurl, author,date } = props;
-    console.log(props);
-    return (
-      <div className="news-card">
-        <div className="card-content">
-          <img src={!imageurl?"https://image.cnbcfm.com/api/v1/image/108139388-1746113870201-NYSE_Traders-OB-Photo-20250501-CC-PRESS-4.jpg?v=1746114141&w=1920&h=1080":imageurl} alt="news" className="card-image" />
-          <div className="card-body">
-            <h5 className="card-title">{title} ...</h5>
-            <p className="card-text">{description}...</p>
-            <p className="card-text">By {!author?"Unknown": author} on {new Date(date).toGMTString()}</p>
-            <Link to ={newsurl} target="_blank" rel="noreferrer" className="read-more-btn">
-              Read more
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
+const NewsItem = (props) => {
+  const {
+    title,
+    description,
+    imageurl,
+    newsurl,
+    author,
+    date,
+    isFeatured = false,
+    category
+  } = props;
 
+  const fallbackImage = "https://platform.theverge.com/wp-content/uploads/sites/2/2025/06/logitech1.jpg?quality=90&strip=all&crop=0%2C14.021425960412%2C100%2C71.957148079176&w=1200";
+  const formattedDate = new Date(date).toLocaleString();
+
+  const article = {
+    title,
+    description,
+    imageurl,
+    newsurl,
+    author,
+    date,
+  };
+
+  return (
+    <Link
+      to="/article"
+      state={{ article }}
+      className={`news-card-link ${isFeatured ? 'featured-news-card' : ''}`}
+    >
+      <div className={`news-card ${isFeatured ? 'featured-card' : ''}`}>
+        {isFeatured ? (
+          <div className="featured-wrapper">
+            <img
+              src={imageurl || fallbackImage}
+              alt="news"
+              className="featured-img"
+            />
+            <div className="featured-content">
+              <h2 className="featured-title">{title}</h2>
+              <p className="featured-description">{description}</p>
+              <p className="featured-meta">
+                By {author || "Unknown"} on {formattedDate}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="card-content">
+            <img
+              src={imageurl || fallbackImage}
+              alt="news"
+              className="card-image"
+            />
+            <div className="card-body">
+              <h5 className="card-title">{title}</h5>
+              <small className="card-meta">
+                By {author || "Unknown"} on {formattedDate}
+              </small>
+            </div>
+          </div>
+        )}
+      </div>
+    </Link>
+  );
+};
 
 export default NewsItem;

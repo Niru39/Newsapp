@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../App.css'; 
+import '../css/Pagination.css'; 
+import '../App.css';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   return (
