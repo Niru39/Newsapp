@@ -207,6 +207,9 @@ position:relative;
     padding: 10px 5px;
     width: 100%;
   }
+  .sidebar-left{
+    width:100%;
+  }
 
   .news-title {
     font-size: 1.2rem;
@@ -244,6 +247,9 @@ position:relative;
 
   .sidebar-left{
     display: none;
+  }
+  .sidebar-right{
+    width:100%;
   }
  
   .featured-title {

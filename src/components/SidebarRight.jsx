@@ -22,7 +22,7 @@ const SidebarRight = ({ newsApiKey, weatherapiKey, stockapiKey }) => {
   useEffect(() => {
     const fetchMostRead = async () => {
       try {
-        const res = await fetch(`https://newsapi.org/v2/top-headlines?country=us&pageSize=5&apiKey=${newsApiKey}`);
+        const res = await fetch(`https://newsapi.org/v2/everything?q=popular&sortBy=popularity&pageSize=5&apiKey=${newsApiKey}`)
         const data = await res.json();
         setMostReadArticles(data.status === 'ok' ? data.articles : []);
       } catch {
@@ -35,7 +35,7 @@ const SidebarRight = ({ newsApiKey, weatherapiKey, stockapiKey }) => {
   useEffect(() => {
     const fetchRecentUpdates = async () => {
       try {
-        const res = await fetch(`https://newsapi.org/v2/everything?q=politics&sortBy=publishedAt&pageSize=5&apiKey=${newsApiKey}`);
+        const res = await fetch(`https://newsapi.org/v2/everything?q=general&sortBy=publishedAt&pageSize=5&apiKey=${newsApiKey}`);
         const data = await res.json();
         setRecentUpdates(data.status === 'ok' ? data.articles : []);
       } catch {
