@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import '../css/NewsBanner.css';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import '../App.css';
 
 const NewsBanner = ({ apiKey, country }) => {
   const [headlines, setHeadlines] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   const fetchTopHeadlines = async () => {
     try {
-      const url = `https://newsapi.org/v2/top-headlines?country=${country}&pageSize=5&apiKey=${apiKey}`;
+      const url = `https://newsapi.org/v2/everything?q=breaking&pageSize=5&apiKey=${apiKey}`;
       const res = await fetch(url);
       const data = await res.json();
 
@@ -27,7 +28,7 @@ const NewsBanner = ({ apiKey, country }) => {
 
   useEffect(() => {
     fetchTopHeadlines();
-  }, [country]);
+  }, [location.pathname]);
 
   useEffect(() => {
     const interval = setInterval(() => {

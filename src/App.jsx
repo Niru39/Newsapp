@@ -1,17 +1,17 @@
-import './App.css';
-import Navbar from './components/Navbar';
-import News from './components/News';
-import SearchNews from './components/Search';
-import NewsDetails from './components/NewsDetails';
-import { Routes, Route } from 'react-router-dom';
-import Footer from './components/Footer';
+import "./App.css";
+import Navbar from "./components/Navbar";
+import News from "./components/News";
+import SearchNews from "./components/Search";
+import NewsDetails from "./components/NewsDetails";
+import { Routes, Route } from "react-router-dom";
+import Footer from "./components/Footer";
 import LoadingBar from "react-top-loading-bar";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import NewsBanner from "./components/Newsbanner";
-import AboutUs from './components/About';
+import AboutUs from "./components/About";
 
 const App = () => {
-  const [mode, setMode] = useState('light');
+  const [mode, setMode] = useState("light");
   const [progress, setProgress] = useState(0);
   const apiKey = import.meta.env.VITE_NEWS_API_KEY;
   const weatherapiKey = import.meta.env.VITE_WEATHER_API_KEY;
@@ -21,12 +21,12 @@ const App = () => {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const toggleMode = () => {
-    if (mode === 'dark') {
-      setMode('light');
-      document.body.classList.remove('dark-mode');
+    if (mode === "dark") {
+      setMode("light");
+      document.body.classList.remove("dark-mode");
     } else {
-      setMode('dark');
-      document.body.classList.add('dark-mode');
+      setMode("dark");
+      document.body.classList.add("dark-mode");
     }
   };
 
@@ -45,8 +45,8 @@ const App = () => {
         onLoaderFinished={() => setProgress(0)}
       />
 
-      <main>
-        <NewsBanner apiKey={apiKey} country='us' />
+      <main style={{ display: "flex", flexDirection: "column" }}>
+        <NewsBanner apiKey={apiKey} />
 
         <Routes>
           {/* Dynamic category route */}
@@ -106,13 +106,21 @@ const App = () => {
           {/* Search route */}
           <Route
             path="/search"
-            element={<SearchNews apiKey={apiKey} mode={mode} pageSize={pageSize} />}
+            element={
+              <SearchNews apiKey={apiKey} mode={mode} pageSize={pageSize} />
+            }
           />
 
           {/* Article details */}
           <Route
             path="/article"
-            element={<NewsDetails apiKey={apiKey} weatherapiKey={weatherapiKey} stockapiKey={stockapiKey} />}
+            element={
+              <NewsDetails
+                apiKey={apiKey}
+                weatherapiKey={weatherapiKey}
+                stockapiKey={stockapiKey}
+              />
+            }
           />
 
           {/* About page */}

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import SidebarLeft from './sidebarLeft';
 import SidebarRight from './SidebarRight';
 import '../css/NewsDetails.css';
 import '../App.css';
@@ -42,16 +41,6 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
 
   return (
     <div className="news-details-layout">
-
-      {/* Left Sidebar */}
-      <aside className="sidebar-left">
-        <SidebarLeft
-          weatherapiKey={weatherapiKey}
-          stockapiKey={stockapiKey}
-        />
-      </aside>
-
-      {/* Main Article Content */}
       <main className="news-details">
         <div className="news-details-container">
           <h1>{title}</h1>
@@ -61,7 +50,7 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
               'https://platform.theverge.com/wp-content/uploads/sites/2/2025/06/logitech1.jpg?quality=90&strip=all&crop=0%2C14.021425960412%2C100%2C71.957148079176&w=1200'
             }
             alt={title}
-            style={{ width: '100%', height: '500px', objectFit: 'cover', marginBottom: '1rem' }}
+            
           />
           <p><strong>By:</strong> {author || 'Unknown'}</p>
           <p><strong>Published on:</strong> {new Date(date).toLocaleString()}</p>
@@ -109,7 +98,7 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
         </div>
       </main>
 
-      {/* Right Sidebar */}
+    
       <aside className="sidebar-right">
         <SidebarRight
           newsApiKey={apiKey}
