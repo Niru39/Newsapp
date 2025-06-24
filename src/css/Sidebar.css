@@ -8,7 +8,6 @@
   flex-direction: column;
   gap: 1.5rem;
   position: sticky;
-  top: 80px; 
   height: fit-content;
   flex:1;
 }
@@ -180,12 +179,6 @@
   color: green;
 }
 
-/* Widgets */
-/* .sidebar-section.widgets {
-  flex: auto;
-  display: flex;
-  flex-direction: column;
-} */
 
 .widget-placeholder {
   background-color: #f1f1f1;
@@ -266,7 +259,7 @@ body.dark-mode .widgets p {
   color: #f1f1f1;
 }
 
-@media (max-width: 480px) {
+@media(min-width:320px) and (max-width: 480px) {
 
   
   .sidebar-right {
