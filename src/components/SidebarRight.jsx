@@ -9,7 +9,10 @@ const SidebarRight = ({ newsApiKey, weatherapiKey, stockapiKey }) => {
   const [email, setEmail] = useState('');
   const [newsletterMsg, setNewsletterMsg] = useState('');
 
- 
+  const [city, setCity] = useState('Kathmandu');
+  const [loadingWeather, setLoadingWeather] = useState(false);
+  const [weatherError, setWeatherError] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
 
   const [stockSymbol, setStockSymbol] = useState('AAPL');
   const [stockData, setStockData] = useState(null);
