@@ -1,14 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import SidebarRight from './SidebarRight';
+import Comments from './Comments';
+import Poll from './Poll';
 import '../css/NewsDetails.css';
 import '../App.css';
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../userAuth/firebase"; 
+import { onAuthStateChanged } from "firebase/auth";
+
+import { useAuth } from "../userAuth/AuthContext";                
+import { logUserActivity } from "../userAuth/firebase";      
 
 const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const [article, setArticle] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
+  const [isSaved, setIsSaved] = useState(false);
+
+  const { currentUser } = useAuth();   // <-- get current user
 
   useEffect(() => {
     const currentArticle = location.state?.article || JSON.parse(localStorage.getItem('selectedArticle'));
@@ -18,8 +30,20 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
       setArticle(currentArticle);
       localStorage.setItem('selectedArticle', JSON.stringify(currentArticle));
       fetchRelatedNews(currentArticle.title);
+      setIsSaved(false);
     }
   }, [location.state]);
+
+  // Log user page visit activity whenever article and user available
+  useEffect(() => {
+    if (currentUser && article) {
+      logUserActivity(currentUser.uid, "page_visit", {
+        page: "NewsDetails",
+        articleId: article.newsurl || article.title,
+        articleTitle: article.title,
+      });
+    }
+  }, [currentUser, article]);
 
   const fetchRelatedNews = async (title) => {
     const keywords = title.split(' ').slice(0, 5).join(' ');
@@ -28,10 +52,48 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
         `https://newsapi.org/v2/everything?q=${encodeURIComponent(keywords)}&pageSize=5&apiKey=${apiKey}`
       );
       const data = await response.json();
-      const filtered = data.articles.filter((a) => a.url !== article?.newsurl);
+      const filtered = (data.articles || []).filter((a) => a.url !== article?.newsurl);
       setRelatedNews(filtered);
     } catch (error) {
       console.error('Failed to fetch related news:', error);
+    }
+  };
+
+  const saveArticleToProfile = async (article) => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login to save articles");
+      return;
+    }
+
+    try {
+      const savedArticleRef = doc(
+        db,
+        "users",
+        user.uid,
+        "savedArticles",
+        article.title.replace(/\W/g, '_')
+      );
+      await setDoc(savedArticleRef, {
+        title: article.title,
+        description: article.description,
+        url: article.newsurl || article.url,
+        imageurl: article.imageurl,
+        author: article.author,
+        date: article.date,
+        savedAt: new Date(),
+      });
+      alert("Article saved!");
+      setIsSaved(true);
+
+      // Log user activity for saving article
+      logUserActivity(user.uid, "save_article", {
+        articleId: article.newsurl || article.title,
+        articleTitle: article.title,
+      });
+    } catch (error) {
+      console.error("Error saving article:", error);
+      alert("Failed to save article");
     }
   };
 
@@ -50,7 +112,6 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
               'https://platform.theverge.com/wp-content/uploads/sites/2/2025/06/logitech1.jpg?quality=90&strip=all&crop=0%2C14.021425960412%2C100%2C71.957148079176&w=1200'
             }
             alt={title}
-            
           />
           <p><strong>By:</strong> {author || 'Unknown'}</p>
           <p><strong>Published on:</strong> {new Date(date).toLocaleString()}</p>
@@ -58,6 +119,17 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
           <Link to={newsurl} target="_blank" rel="noopener noreferrer">
             Read More...
           </Link>
+
+          <button
+            onClick={() => saveArticleToProfile(article)}
+            disabled={isSaved}
+            className="save-article-button"
+          >
+            {isSaved ? "Saved" : "Save Article"}
+          </button>
+
+          <Poll articleId={article.newsurl || article.title} />
+          <Comments articleId={article.newsurl || article.title} />
 
           <h2>Related News</h2>
           <div className="related-news-container">
@@ -68,7 +140,7 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
                 imageurl: item.urlToImage,
                 newsurl: item.url,
                 author: item.author,
-                date: item.publishedAt
+                date: item.publishedAt,
               };
 
               return (
@@ -98,7 +170,6 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
         </div>
       </main>
 
-    
       <aside className="sidebar-right">
         <SidebarRight
           newsApiKey={apiKey}

@@ -1,0 +1,109 @@
+/* Container */
+.admin-panel {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Heading */
+.admin-panel h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #007bff;
+}
+
+/* Table */
+.admin-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+}
+
+/* Table header */
+.admin-panel th, 
+.admin-panel td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.admin-panel th {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+/* Table rows hover */
+.admin-panel tbody tr:hover {
+  background-color: #f1f7ff;
+}
+
+/* No users row */
+.admin-panel tbody tr td[colspan="4"] {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+}
+
+/* Button */
+.admin-panel button {
+  padding: 6px 14px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-panel button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive: small screens */
+@media (max-width: 600px) {
+  .admin-panel {
+    padding: 1rem;
+  }
+
+  .admin-panel table,
+  .admin-panel thead,
+  .admin-panel tbody,
+  .admin-panel th,
+  .admin-panel td,
+  .admin-panel tr {
+    display: block;
+  }
+
+  .admin-panel thead tr {
+    display: none;
+  }
+
+  .admin-panel tbody tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .admin-panel tbody td {
+    padding: 8px 10px;
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: left;
+  }
+
+  .admin-panel tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    font-weight: 600;
+    color: #007bff;
+  }
+}

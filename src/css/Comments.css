@@ -1,0 +1,163 @@
+.comments-section {
+  margin-top: 2rem;
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.comments-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #0056b3;
+}
+
+.comment-item {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+}
+
+.comment-item strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.comment-delete-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-delete-button:hover {
+  background-color: #b02a37;
+}
+
+.comment-form {
+  margin-top: 1rem;
+}
+
+.comment-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.comment-post-button {
+  margin-top: 0.75rem;
+  background-color: #0056b3;
+  color: white;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.comment-post-button:hover {
+  background-color: #003d80;
+}
+
+.comment-login-prompt {
+  font-style: italic;
+  color: #666;
+  margin-top: 1rem;
+}
+
+/* Dark mode */
+body.dark-mode .comments-section {
+  background-color: #2c2c3f;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+body.dark-mode .comment-delete-button {
+  background-color: #a71d2a;
+}
+
+body.dark-mode .comment-delete-button:hover {
+  background-color: #891824;
+}
+
+body.dark-mode .comment-textarea {
+  background-color: #1e1e2f;
+  color: #f1f1f1;
+  border-color: #444;
+}
+
+body.dark-mode .comment-post-button {
+  background-color: #1a4d8f;
+}
+
+body.dark-mode .comment-post-button:hover {
+  background-color: #003d80;
+}
+
+@media screen and (max-width: 480px) {
+  .comments-section {
+    padding: 0.75rem;
+  }
+
+  .comments-title {
+    font-size: 1.1rem;
+  }
+
+  .comment-delete-button {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+
+  .comment-textarea {
+    font-size: 0.9rem;
+  }
+
+  .comment-post-button {
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
+  }
+}
+
+
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .comments-section {
+    padding: 1rem;
+  }
+
+  .comments-title {
+    font-size: 1.2rem;
+  }
+
+  .comment-textarea {
+    font-size: 1rem;
+  }
+
+  .comment-post-button {
+    padding: 0.5rem 1.1rem;
+  }
+}
+
+
+@media screen and (min-width: 769px) {
+  .comments-section {
+    padding: 1.25rem 2rem;
+  }
+
+  .comment-textarea {
+    min-height: 100px;
+  }
+}

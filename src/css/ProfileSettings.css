@@ -1,0 +1,193 @@
+/* Container */
+.profile-settings-container {
+  position: relative;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  color: #333;
+  border: 1px solid #ced4da;
+}
+
+/* Close button */
+.profile-settings-container .close-button {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 1.4rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.profile-settings-container .close-button:hover {
+  color: #333;
+}
+
+/* Form */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Labels */
+.profile-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+/* Inputs */
+.profile-form input,
+.profile-form select {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Readonly email */
+.profile-form input[readonly] {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+/* Textarea */
+.profile-form textarea {
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+  color: #333;
+  background-color: #fff;
+}
+
+/* Button */
+.btn-save {
+  padding: 10px 20px;
+  background-color: #0056b3;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: center;
+  transition: background-color 0.2s ease;
+}
+
+.btn-save:hover {
+  background-color: #003d80;
+}
+
+
+/* Profile image preview */
+.profile-form img {
+  margin-top: 8px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #bbb;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+/* -------------------- DARK MODE -------------------- */
+body.dark-mode .profile-settings-container {
+  background-color: #2c2c3f;
+  color: #f1f1f1;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode .profile-form label {
+  color: #f1f1f1;
+  font-weight: 600;
+}
+
+body.dark-mode .profile-form input,
+body.dark-mode .profile-form select {
+  background-color: #3a3a55;
+  border: 1px solid #666;
+  color: #f1f1f1;
+}
+
+body.dark-mode .profile-form input:focus,
+body.dark-mode .profile-form select:focus,
+body.dark-mode .profile-form textarea:focus {
+  border-color: #3399ff;
+  outline: none;
+  box-shadow: 0 0 6px rgba(51, 153, 255, 0.7);
+}
+
+body.dark-mode .profile-form textarea {
+  background-color: #3a3a55;
+  border: 1px solid #666;
+  color: #f1f1f1;
+}
+
+body.dark-mode .btn-save {
+  background-color: #3399ff;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode .btn-save:hover {
+  background-color: #2277cc;
+}
+
+
+
+body.dark-mode .profile-form img {
+  border-color: #666;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.6);
+}
+
+@media (min-width:320px) and (max-width: 480px) {
+  .profile-settings-container {
+    padding: 1rem 1rem;
+    margin: 1rem;
+  }
+  .btn-save {
+    padding: 12px;
+    font-size: 1rem;
+  }
+  .profile-form img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .profile-settings-container {
+    max-width: 90%;
+    padding: 1.5rem 1.5rem;
+  }
+  .profile-form img {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .profile-settings-container {
+    max-width: 550px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .profile-settings-container {
+    max-width: 600px;
+  }
+}

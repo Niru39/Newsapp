@@ -1,57 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import '../css/StockWidget.css'
+
+const stockSymbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA", "NFLX", "META", "NVDA"];
 
 const StockWidget = ({ stockapiKey }) => {
-  const [stockSymbol, setStockSymbol] = useState("AAPL");
-  const [stockData, setStockData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [stocks, setStocks] = useState([]);
 
   useEffect(() => {
-    const fetchStock = async () => {
-      if (!stockSymbol) return;
-      setLoading(true);
-      setError(null);
+    const fetchAllStocks = async () => {
       try {
-        const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${stockSymbol}&token=${stockapiKey}`);
-        if (!res.ok) throw new Error("Stock symbol not found");
-        const data = await res.json();
-        setStockData({
-          price: data.c.toFixed(2),
-          change: ((data.c - data.pc) / data.pc * 100).toFixed(2),
-        });
+        const responses = await Promise.all(
+          stockSymbols.map(symbol =>
+            fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${stockapiKey}`)
+              .then(res => res.json())
+              .then(data => ({
+                symbol,
+                price: data.c.toFixed(2),
+                change: ((data.c - data.pc) / data.pc * 100).toFixed(2),
+              }))
+          )
+        );
+        setStocks(responses);
       } catch (error) {
-        setError(error.message);
-        setStockData(null);
+        console.error("Error fetching stock data:", error);
       }
-      setLoading(false);
     };
-    fetchStock();
-  }, [stockSymbol, stockapiKey]);
+
+    fetchAllStocks();
+    const interval = setInterval(fetchAllStocks, 3000); 
+    return () => clearInterval(interval);
+  }, [stockapiKey]);
 
   return (
-    <section className="sidebar-section widgets">
-      <h3>Stocks</h3>
-      <input
-        className="widget-placeholder"
-        type="text"
-        value={stockSymbol}
-        onChange={(e) => setStockSymbol(e.target.value.toUpperCase())}
-        placeholder="Enter stock symbol"
-        aria-label="Stock symbol"
-      />
-      {loading ? (
-        <p>Loading stock...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : stockData ? (
-        <div>
-          <p>{stockSymbol}: {stockData.price} ({stockData.change}%)</p>
-        </div>
-      ) : (
-        <p>No stock data</p>
-      )}
-    </section>
+    <div className="stock-ticker-bar">
+      <h3> Stocks</h3>
+      <div className="ticker-content">
+        {stocks.map((stock) => (
+          <div key={stock.symbol} className="stock-item">
+            <span className="symbol">{stock.symbol}</span>
+            <span className="price">${stock.price}</span>
+            <span
+              className={`change ${
+                parseFloat(stock.change) >= 0 ? "positive" : "negative"
+              }`}
+            >
+              ({stock.change}%)
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 

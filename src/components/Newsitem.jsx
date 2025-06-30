@@ -39,7 +39,12 @@ const NewsItem = (props) => {
               src={imageurl || fallbackImage}
               alt="news"
               className="featured-img"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = fallbackImage;
+              }}
             />
+
             <div className="featured-content">
               <h2 className="featured-title">{title}</h2>
               <p className="featured-description">{description}</p>
@@ -54,7 +59,12 @@ const NewsItem = (props) => {
               src={imageurl || fallbackImage}
               alt="news"
               className="card-image"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = fallbackImage;
+              }}
             />
+
             <div className="card-body">
               <h5 className="card-title">{title}</h5>
               <small className="card-meta">

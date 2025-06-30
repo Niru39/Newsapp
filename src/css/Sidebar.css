@@ -139,6 +139,64 @@
  background-color: #b3d3f5;
 }
 
+.horoscope {
+  background-color: #f1f1f1;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.horoscope select {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  font-size: 1rem;
+  background-color: #fff;
+  color: #333;
+  width: 100%;
+}
+
+.horoscope select:focus {
+  outline: none;
+  border-color: #0056b3;
+}
+
+.horoscope p {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+
+
+.horoscope p strong {
+  color: #0056b3;
+  
+}
+
+
+body.dark-mode .horoscope {
+  background-color: #2c2c3f;
+  border-color: #444;
+}
+
+body.dark-mode .horoscope select {
+  background-color: #2c2c3f;
+  color: #f1f1f1;
+  border: 1px solid #555;
+}
+
+body.dark-mode .horoscope p, 
+body.dark-mode .horoscope p strong  {
+  color: #f1f1f1;
+}
+
+
+
 
 
 
