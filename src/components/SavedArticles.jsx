@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
 import { auth, db } from '../userAuth/firebase';
 import { useNavigate } from 'react-router-dom';
-import '../css/SavedArticles.css'; // Add this for styling
+import '../css/SavedArticles.css';
+import { logUserActivity } from '../userAuth/LogActivity';
 
 const SavedArticles = () => {
   const [savedArticles, setSavedArticles] = useState([]);
@@ -45,6 +46,24 @@ const SavedArticles = () => {
     try {
       await deleteDoc(doc(db, 'users', user.uid, 'savedArticles', id));
       setSavedArticles(prev => prev.filter(article => article.id !== id));
+
+      const removed = savedArticles.find(a => a.id === id);
+      if (removed) {
+        logUserActivity(
+          user.uid,
+          user.displayName || user.email || "Unknown User",
+          "Removed Saved Articles",  
+          {
+            articleId: removed.newsurl || removed.title,
+            articleTitle: removed.title,
+          },
+          null,                      
+          false                      
+        );
+
+      }
+
+
     } catch (err) {
       console.error("Failed to remove article:", err);
       alert("Failed to remove article");
@@ -74,10 +93,14 @@ const SavedArticles = () => {
               <div className="saved-article-actions">
                 <button
                   className="view-btn"
-                  onClick={() => navigate('/article', { state: { article } })}
+                  onClick={() => {
+
+                    navigate('/article', { state: { article } });
+                  }}
                 >
                   View in App
                 </button>
+
                 <button
                   className="remove-btn"
                   onClick={() => removeSaved(article.id)}

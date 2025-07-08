@@ -1,8 +1,8 @@
-
 .user-activity {
+  position: relative;
   padding: 2rem;
   background-color: #ffffff;
-  color: #2c3e50;
+  color: #0056b3;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   max-width: 960px;
@@ -11,26 +11,68 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+
+.user-activity .close-button {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  z-index: 10;
+  font-size: 1.4rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.user-activity .close-button:hover {
+  color: #333;
+}
+
 .user-activity h2 {
   font-size: 2rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  color: #2c3e50;
+  color: #0056b3;
 }
 
 .user-activity ul {
   list-style-type: none;
-  padding: 0;
+  padding: 1rem 0;
   margin: 0;
+}
+
+.activity-filter {
+  display: block;
+  width: 220px;
+  margin: 0 auto 2rem auto;
+  padding: 0.5rem 0.6rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #0056b3;
+  color: #0056b3;
+  background-color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.activity-filter:hover,
+.activity-filter:focus {
+  background-color: #0056b3;
+  color: white;
+  outline: none;
 }
 
 .activity-item {
   background-color: #f8f9fa;
-  border-left: 4px solid #3498db;
+  border: 1px solid #ced4da;
   padding: 1.2rem;
   margin-bottom: 1rem;
   border-radius: 10px;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  position: relative;
 }
 
 .activity-item:hover {
@@ -38,42 +80,74 @@
   transform: translateY(-2px);
 }
 
+
+
 .activity-item p {
   margin: 0.4rem 0;
   font-size: 1rem;
-  color: #34495e;
+  color: #444;
 }
 
 .activity-item strong {
-  color: #2c3e50;
+  color: #444;
+  min-width: 90px;
+  display: inline-block;
 }
 
-  .user-activity {
-    background-color: #1e1e1e;
-    color: #ecf0f1;
-  }
+.activity-item p span {
+  font-weight: 600;
+  color: #d9534f;
+  /* Red color for admin tag text */
+}
 
-  .user-activity h2 {
-    color: #ecf0f1;
-  }
+.delete-log-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  margin-top: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
 
-  .activity-item {
-    background-color: #2c2c2c;
-    border-left: 4px solid #3498db;
-  }
-
-  .activity-item p,
-  .activity-item strong {
-    color: #ecf0f1;
-  }
-
-  .activity-item:hover {
-    background-color: #293646;
-  }
+.delete-log-button:hover {
+  background-color: #cc0000;
+}
 
 
+body.dark-mode .user-activity {
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+}
 
-@media screen and (max-width: 480px) {
+body.dark-mode .user-activity h2 {
+  color: #f1f1f1;
+}
+
+body.dark-mode .activity-item {
+  background-color: #2c2c3f;
+  border-color: #44475a;
+}
+
+
+
+body.dark-mode .activity-item p,
+body.dark-mode .activity-item strong {
+  color: #ecf0f1;
+}
+
+body.dark-mode .activity-item p span {
+  color: #ff6b6b;
+}
+
+body.dark-mode .activity-item:hover {
+  background-color: #293646;
+}
+
+
+
+@media (min-width: 320px) and (max-width: 480px) {
   .user-activity {
     padding: 1rem;
   }
@@ -82,23 +156,39 @@
     font-size: 1.5rem;
   }
 
+  .activity-filter {
+    width: 100%;
+    max-width: 100%;
+  }
+
   .activity-item {
     padding: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
   .activity-item p {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    word-break: break-word;
+  }
+
+  .activity-item strong {
+    min-width: 70px;
   }
 }
 
-
-@media screen and (min-width: 481px) and (max-width: 768px) {
+@media (min-width: 481px) and (max-width: 768px) {
   .user-activity {
     padding: 1.5rem;
   }
 
   .user-activity h2 {
     font-size: 1.75rem;
+  }
+
+  .activity-filter {
+    width: 220px;
   }
 
   .activity-item {
@@ -108,15 +198,63 @@
   .activity-item p {
     font-size: 0.95rem;
   }
+
+  .activity-item strong {
+    min-width: 80px;
+  }
 }
 
 
-@media screen  and (min-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1024px) {
   .user-activity {
-    max-width: 1024px;
+    max-width: 900px;
+    padding: 1.8rem 2rem;
+  }
+
+  .user-activity h2 {
+    font-size: 1.85rem;
+  }
+
+  .activity-filter {
+    width: 220px;
+  }
+
+  .activity-item {
+    padding: 1.15rem 1.3rem;
   }
 
   .activity-item p {
     font-size: 1rem;
+  }
+
+  .activity-item strong {
+    min-width: 85px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .user-activity {
+    max-width: 1024px;
+    padding: 2rem 2.5rem;
+  }
+
+  .user-activity h2 {
+    font-size: 2rem;
+  }
+
+  .activity-filter {
+    width: 240px;
+  }
+
+  .activity-item {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .activity-item p {
+    font-size: 1.05rem;
+  }
+
+  .activity-item strong {
+    min-width: 90px;
   }
 }

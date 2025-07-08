@@ -13,18 +13,16 @@ import { db, auth } from "../userAuth/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useAuth } from "../userAuth/AuthContext";
 import "../css/Comments.css";
+import { logUserActivity } from "../userAuth/LogActivity";
 
 const Comments = ({ articleId }) => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, username, currentUser } = useAuth();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [user, setUser] = useState(null);
+
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => setUser(u));
-    return () => unsub();
-  }, []);
+
 
   const fetchComments = async () => {
     setLoading(true);
@@ -48,16 +46,26 @@ const Comments = ({ articleId }) => {
 
   const handlePost = async () => {
     if (!newComment.trim()) return alert("Comment cannot be empty");
-    if (!user) return alert("Please login to post a comment");
+    if (!currentUser) return alert("Please login to post a comment");
 
     try {
       await addDoc(collection(db, "comments"), {
         articleId,
-        userId: user.uid,
-        displayName: user.displayName || user.email,
+        userId: currentUser.uid,
+        displayName: currentUser.displayName || currentUser.email,
         content: newComment.trim(),
         timestamp: serverTimestamp(),
       });
+      alert('Comment posted successfully.')
+      await logUserActivity(
+        currentUser.uid,
+        currentUser.displayName || currentUser.email || "Unknown",
+        "comment_post",
+        { articleId },
+        newComment.trim()
+      );
+
+
       setNewComment("");
       fetchComments();
     } catch (error) {
@@ -70,6 +78,17 @@ const Comments = ({ articleId }) => {
     try {
       await deleteDoc(doc(db, "comments", commentId));
       fetchComments();
+      alert("Comment deleted sucessfully.");
+      await logUserActivity(
+        currentUser.uid,
+        username || currentUser.displayName || currentUser.email || "Unknown",
+        "comment_delete",
+        {
+          articleId,
+          commentId,
+        },
+        isAdmin
+      );
     } catch (error) {
       alert("Failed to delete comment.");
     }
@@ -99,7 +118,7 @@ const Comments = ({ articleId }) => {
         ))
       )}
 
-      {user ? (
+      {currentUser ? (
         <div className="comment-form">
           <textarea
             className="comment-textarea"

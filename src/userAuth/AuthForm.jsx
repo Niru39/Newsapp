@@ -10,7 +10,7 @@ import {
   signOut
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { logUserActivity, logAnalyticsEvent } from '../userAuth/firebase'; 
+import { logUserActivity } from '../userAuth/LogActivity';
 import '../css/Auth.css';
 
 const googleProvider = new GoogleAuthProvider();
@@ -28,27 +28,45 @@ const AuthForm = ({ onClose }) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
     try {
       if (mode === 'register') {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
         await updateProfile(user, { displayName: name });
+
         await setDoc(doc(db, 'users', user.uid), {
           name,
           email,
           isAdmin: false,
           createdAt: new Date(),
         });
-        // Log registration activity and analytics
-        logUserActivity(user.uid, 'user_register');
-        logAnalyticsEvent('user_register');
+
+        await logUserActivity(
+          user.uid,
+          name || user.email,
+          "user_register",
+          { name, email },
+          null,
+          false
+        );
+
+
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        // Log login activity and analytics
-        logUserActivity(user.uid, 'user_login');
-        logAnalyticsEvent('user_login');
+        await logUserActivity(
+          user.uid,
+          user.displayName || user.email,
+          "user_login",
+          {username: username},
+          null,
+          false
+        );
+
       }
+
       window.location.href = '/';
     } catch (err) {
       setError(err.message);
@@ -56,14 +74,14 @@ const AuthForm = ({ onClose }) => {
     }
   };
 
-  // Social Login Handler
   const handleSocialLogin = async (provider) => {
     setError('');
     setLoading(true);
+
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      // Save user to Firestore if new or update existing
+
       const userDocRef = doc(db, 'users', user.uid);
       await setDoc(userDocRef, {
         name: user.displayName || '',
@@ -71,9 +89,20 @@ const AuthForm = ({ onClose }) => {
         isAdmin: false,
         createdAt: new Date(),
       }, { merge: true });
-      // Log social login activity and analytics
-      logUserActivity(user.uid, 'user_social_login', { provider: provider.providerId });
-      logAnalyticsEvent('user_social_login', { provider: provider.providerId });
+
+      await logUserActivity(
+        user.uid,
+        user.displayName || user.email,
+        "user_social_login",
+        {
+          provider: provider.providerId,
+          email: user.email,
+          name: user.displayName
+        },
+        null,
+        false
+      );
+
 
       window.location.href = '/';
     } catch (err) {
@@ -82,21 +111,11 @@ const AuthForm = ({ onClose }) => {
     }
   };
 
-  // Example logout handler you can use elsewhere (not part of the form UI)
-  const handleLogout = async () => {
-    if (!auth.currentUser) return;
 
-    const uid = auth.currentUser.uid;
-    await signOut(auth);
-    logUserActivity(uid, 'user_logout');
-    logAnalyticsEvent('user_logout');
-    window.location.href = '/login'; // or wherever your login page is
-  };
 
   return (
     <div className="auth-page">
       <div className="auth-form-container">
-
         {onClose && (
           <button
             className="close-button"
@@ -107,6 +126,7 @@ const AuthForm = ({ onClose }) => {
             x
           </button>
         )}
+
         <h2>{mode === 'login' ? 'Log In' : 'Create New Account'}</h2>
         {error && <p className="auth-error">{error}</p>}
 

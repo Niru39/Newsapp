@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "../userAuth/firebase";
-import {Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
+import { logUserActivity } from "../userAuth/LogActivity";
+import { useAuth } from "../userAuth/AuthContext"; // make sure you import useAuth
 
 const defaultPreferences = {
   topics: [],
@@ -14,26 +16,28 @@ const defaultPreferences = {
 };
 
 const topicOptions = [
-  "technology", "sports", "business", "health", "entertainment",
-  "science", "politics", "food", "corruption", "accidents"
+  "culture",
+ "nature",
+  "politics",
+  "food",
+  "corruption",
+  "accidents",
 ];
 
-const UserProfile = ({onClose}) => {
+const UserProfile = ({ onClose }) => {
   const [preferences, setPreferences] = useState(defaultPreferences);
   const [loading, setLoading] = useState(true);
   const [newKeyword, setNewKeyword] = useState("");
-  const [user, setUser] = useState(null);
+  const { currentUser } = useAuth(); // use currentUser here
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
-        setLoading(false);
-        return;
-      }
+    if (!currentUser) {
+      setLoading(false);
+      return;
+    }
 
-      setUser(currentUser);
-
+    const fetchPreferences = async () => {
       try {
         const docRef = doc(db, "users", currentUser.uid);
         const docSnap = await getDoc(docRef);
@@ -41,18 +45,18 @@ const UserProfile = ({onClose}) => {
           setPreferences(docSnap.data().preferences || defaultPreferences);
         }
       } catch (error) {
-        if (error.code === 'unavailable') {
-          alert('Network unavailable');
+        if (error.code === "unavailable") {
+          alert("Network unavailable");
         } else {
           console.error("Failed to fetch preferences:", error);
         }
       } finally {
         setLoading(false);
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, []);
+    fetchPreferences();
+  }, [currentUser]);
 
   const toggleTopic = (topic) => {
     setPreferences((prev) => {
@@ -73,7 +77,7 @@ const UserProfile = ({onClose}) => {
   };
 
   const savePreferences = async () => {
-    if (!user) {
+    if (!currentUser) {
       alert("Please log in to save preferences.");
       return;
     }
@@ -82,7 +86,7 @@ const UserProfile = ({onClose}) => {
       console.log("Saving preferences:", preferences);
 
       const writePromise = setDoc(
-        doc(db, "users", user.uid),
+        doc(db, "users", currentUser.uid),
         { preferences },
         { merge: true }
       );
@@ -92,6 +96,16 @@ const UserProfile = ({onClose}) => {
       );
 
       await Promise.race([writePromise, timeoutPromise]);
+
+      await logUserActivity(
+        currentUser.uid,
+        currentUser.displayName || "Unknown", 
+        "Updated Preferences",                  
+        { updatedPreferences: preferences },
+        null,    
+        false                                  
+      );
+
 
       alert("Preferences saved!");
       navigate("/");
@@ -105,7 +119,9 @@ const UserProfile = ({onClose}) => {
 
   return (
     <div className="user-profile-container">
-      <Link to="/" className="close-button" aria-label="Go home">×</Link>
+      <Link to="/" className="close-button" aria-label="Go home">
+        ×
+      </Link>
 
       <h2 className="profile-title">Your Preferences</h2>
 

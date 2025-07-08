@@ -10,15 +10,13 @@ import {
 } from "firebase/firestore";
 import { db } from "../userAuth/firebase";
 import { useAuth } from "../userAuth/AuthContext";
-import { logUserActivity, logAnalyticsEvent } from "../userAuth/firebase";  
+import { logUserActivity } from "../userAuth/LogActivity";
 import '../css/Poll.css';
 
 const Poll = () => {
-  const { currentUser, isAdmin } = useAuth();
+  const { currentUser, isAdmin, username } = useAuth();
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Admin form state
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
 
@@ -33,7 +31,6 @@ const Poll = () => {
     setLoading(false);
   };
 
-  // Admin: handle adding option input
   const handleAddOption = () => setOptions([...options, ""]);
 
   const handleOptionChange = (index, value) => {
@@ -42,7 +39,6 @@ const Poll = () => {
     setOptions(newOptions);
   };
 
-  // Admin: create new poll
   const handleCreatePoll = async (e) => {
     e.preventDefault();
     if (!question.trim() || options.some(opt => !opt.trim())) {
@@ -58,11 +54,18 @@ const Poll = () => {
         options: formattedOptions,
         createdAt: serverTimestamp(),
         createdBy: currentUser.uid,
+        voters: {} // to track who has voted
       });
 
-      // Log admin create activity
-      logUserActivity(currentUser.uid, "poll_create", { question, options: formattedOptions });
-      logAnalyticsEvent("poll_create", { question, optionsCount: options.length });
+      alert('Poll created successfully.');
+
+      await logUserActivity(
+        currentUser.uid,
+        username || "Unknown",
+        "poll_create",
+        { question, options: formattedOptions },
+        isAdmin === true
+      );
 
       setQuestion("");
       setOptions(["", ""]);
@@ -73,16 +76,18 @@ const Poll = () => {
     }
   };
 
-  // Admin: delete poll
   const handleDeletePoll = async (id) => {
     if (window.confirm("Delete this poll?")) {
       try {
         await deleteDoc(doc(db, "polls", id));
-
-        // Log admin delete activity
-        logUserActivity(currentUser.uid, "poll_delete", { pollId: id });
-        logAnalyticsEvent("poll_delete", { pollId: id });
-
+        alert('Poll deleted successfully.');
+        await logUserActivity(
+          currentUser.uid,
+          username || "Unknown",
+          "poll_delete",
+          { pollId: id, pollQuestion: question },
+          isAdmin === true
+        );
         fetchPolls();
       } catch (error) {
         console.error("Failed to delete poll:", error);
@@ -91,34 +96,58 @@ const Poll = () => {
     }
   };
 
-  // Normal User Poll voting component
-  const PollVote = ({ poll, currentUser }) => {
+  const PollVote = ({ poll }) => {
     const [selected, setSelected] = useState("");
-    const [options, setOptions] = useState(poll.options);
+    const [options, setOptions] = useState(poll.options || {});
+    const [hasVoted, setHasVoted] = useState(false);
+
+    useEffect(() => {
+      if (currentUser && poll.voters && poll.voters[currentUser.uid]) {
+        setHasVoted(true);
+      }
+    }, [poll.voters, currentUser]);
 
     const handleVote = async () => {
       if (!selected) return alert("Select an option first");
+      if (!currentUser) return alert("Login required to vote.");
+      if (hasVoted) {
+        alert("You have already voted on this poll.");
+        await logUserActivity(
+          currentUser.uid,
+          username || "Unknown",
+          "poll_vote_attempt_duplicate",
+          { pollId: poll.id, question: poll.question },
+          null,     
+          false    
+        );
 
-      if (!currentUser) {
-        alert("Login required to vote.");
         return;
       }
 
+      const pollRef = doc(db, "polls", poll.id);
       const updatedOptions = {
         ...options,
         [selected]: (options[selected] || 0) + 1
       };
 
       try {
-        await updateDoc(doc(db, "polls", poll.id), { options: updatedOptions });
+        await updateDoc(pollRef, {
+          options: updatedOptions,
+          [`voters.${currentUser.uid}`]: true
+        });
+
         setOptions(updatedOptions);
-        setSelected("");
+        setHasVoted(true);
+        alert("Vote recorded.");
 
-        // Log user activity to Firestore
-        logUserActivity(currentUser.uid, "poll_vote", { pollId: poll.id, option: selected });
-
-        // Log analytics event
-        logAnalyticsEvent("poll_vote", { pollId: poll.id, option: selected });
+        await logUserActivity(
+          currentUser.uid,
+          username || "Unknown",
+          "poll_vote",
+          { pollId: poll.id, question: poll.question, option: selected },
+          null,
+          false
+        );
       } catch (err) {
         console.error("Vote update failed:", err);
         alert("Failed to submit vote.");
@@ -128,23 +157,27 @@ const Poll = () => {
     return (
       <div className="poll-vote">
         <h4>{poll.question}</h4>
-        <select
-          value={selected}
-          onChange={(e) => setSelected(e.target.value)}
-          className="poll-select"
-        >
-          <option value="" disabled>
-            Select an option
-          </option>
-          {Object.keys(options).map((opt) => (
-            <option key={opt} value={opt}>
-              {opt} ({options[opt]} votes)
-            </option>
-          ))}
-        </select>
-        <button className="poll-vote-button" onClick={handleVote}>
-          Vote
-        </button>
+        {hasVoted ? (
+          <p style={{ color: "green", fontWeight: 600 }}>You already voted.</p>
+        ) : (
+          <>
+            <select
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
+              className="poll-select"
+            >
+              <option value="" disabled>Select an option</option>
+              {Object.keys(options).map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt} ({options[opt]} votes)
+                </option>
+              ))}
+            </select>
+            <button className="poll-vote-button" onClick={handleVote}>
+              Vote
+            </button>
+          </>
+        )}
       </div>
     );
   };
@@ -204,7 +237,7 @@ const Poll = () => {
           {polls.length === 0 ? (
             <p>No polls available</p>
           ) : (
-            polls.map(poll => <PollVote key={poll.id} poll={poll} currentUser={currentUser} />)
+            polls.map(poll => <PollVote key={poll.id} poll={poll} />)
           )}
         </>
       )}

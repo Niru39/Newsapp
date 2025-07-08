@@ -6,11 +6,11 @@ import Poll from './Poll';
 import '../css/NewsDetails.css';
 import '../App.css';
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "../userAuth/firebase"; 
-import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "../userAuth/firebase";
 
-import { useAuth } from "../userAuth/AuthContext";                
-import { logUserActivity } from "../userAuth/firebase";      
+
+import { useAuth } from "../userAuth/AuthContext";
+import { logUserActivity } from "../userAuth/LogActivity";
 
 const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
   const location = useLocation();
@@ -20,7 +20,7 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
   const [relatedNews, setRelatedNews] = useState([]);
   const [isSaved, setIsSaved] = useState(false);
 
-  const { currentUser } = useAuth();   // <-- get current user
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const currentArticle = location.state?.article || JSON.parse(localStorage.getItem('selectedArticle'));
@@ -34,16 +34,25 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
     }
   }, [location.state]);
 
-  // Log user page visit activity whenever article and user available
+
   useEffect(() => {
     if (currentUser && article) {
-      logUserActivity(currentUser.uid, "page_visit", {
-        page: "NewsDetails",
-        articleId: article.newsurl || article.title,
-        articleTitle: article.title,
-      });
+      logUserActivity(
+        currentUser.uid,
+        currentUser.displayName || currentUser.email || "Unknown User",
+        "Viewed Article",
+        {
+          articleId: article.newsurl || article.title,
+          articleTitle: article.title,
+        },
+        null,
+        false
+      );
+
     }
+
   }, [currentUser, article]);
+
 
   const fetchRelatedNews = async (title) => {
     const keywords = title.split(' ').slice(0, 5).join(' ');
@@ -58,10 +67,8 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
       console.error('Failed to fetch related news:', error);
     }
   };
-
   const saveArticleToProfile = async (article) => {
-    const user = auth.currentUser;
-    if (!user) {
+    if (!currentUser) {
       alert("Please login to save articles");
       return;
     }
@@ -70,7 +77,7 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
       const savedArticleRef = doc(
         db,
         "users",
-        user.uid,
+        currentUser.uid,
         "savedArticles",
         article.title.replace(/\W/g, '_')
       );
@@ -83,19 +90,29 @@ const NewsDetails = ({ apiKey, weatherapiKey, stockapiKey }) => {
         date: article.date,
         savedAt: new Date(),
       });
+
       alert("Article saved!");
       setIsSaved(true);
 
-      // Log user activity for saving article
-      logUserActivity(user.uid, "save_article", {
-        articleId: article.newsurl || article.title,
-        articleTitle: article.title,
-      });
+      // ✅ Log activity directly, not in useEffect
+      logUserActivity(
+        currentUser.uid,
+        currentUser.displayName || currentUser.email || "Unknown User",
+        "Saved Article",
+        {
+          articleId: article.newsurl || article.title,
+          articleTitle: article.title,
+        },
+        null,
+        false
+      );
     } catch (error) {
       console.error("Error saving article:", error);
       alert("Failed to save article");
     }
   };
+
+
 
   if (!article) return null;
 

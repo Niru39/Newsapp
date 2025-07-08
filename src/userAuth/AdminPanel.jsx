@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../userAuth/firebase';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { db, auth } from '../userAuth/firebase';
+import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import "../css/AdminPanel.css";
+import { logUserActivity } from "../userAuth/LogActivity";
 
 const AdminPanel = () => {
   const [users, setUsers] = useState([]);
@@ -34,18 +36,50 @@ const AdminPanel = () => {
       await updateDoc(userRef, {
         isAdmin: !currentStatus,
       });
-      // Update local state
-      setUsers(users.map(user => user.id === userId ? { ...user, isAdmin: !currentStatus } : user));
+     await logUserActivity(
+        auth.currentUser.uid,                      
+        auth.currentUser.displayName || auth.currentUser.email || "Unknown", 
+        currentStatus ? "revoked_admin" : "made_admin",
+       { targetUserId: userId },                  
+       true                                      
+      );
+
+      setUsers(users.map(user =>
+        user.id === userId ? { ...user, isAdmin: !currentStatus } : user
+      ));
     } catch (error) {
       console.error('Error updating user:', error);
+    }
+  };
+
+  // Delete user
+  const deleteUser = async (userId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, 'users', userId));
+      setUsers(users.filter(user => user.id !== userId));
+      await logUserActivity(
+        auth.currentUser.uid,
+        auth.currentUser.displayName || auth.currentUser.email || "Unknown",
+        "delete_user",
+        { targetUserId: userId },
+        true
+      );
+
+    } catch (error) {
+      console.error('Error deleting user:', error);
     }
   };
 
   if (loading) return <p>Loading users...</p>;
 
   return (
-    <div>
+    <div className='admin-panel'>
+
       <h2>Admin Panel - Manage Users</h2>
+      
       <table>
         <thead>
           <tr>
@@ -67,6 +101,12 @@ const AdminPanel = () => {
               <td>
                 <button onClick={() => toggleAdmin(user.id, user.isAdmin)}>
                   {user.isAdmin ? 'Revoke Admin' : 'Make Admin'}
+                </button>
+                <button className='delete-btn'
+                  onClick={() => deleteUser(user.id)}
+                
+                >
+                  Delete
                 </button>
               </td>
             </tr>

@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import "../css/ProfileSettings.css";
+import { logUserActivity } from '../userAuth/LogActivity';
 
 // 🔧 Helper: Upload with timeout
 const uploadWithTimeout = (ref, file, timeout = 30000) => {
@@ -22,10 +23,8 @@ const ProfileSettings = () => {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [profileImageURL, setProfileImageURL] = useState("");
-
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
 
@@ -62,7 +61,6 @@ const ProfileSettings = () => {
     try {
       let photoURL;
 
-      // 🔐 Check file size before upload
       if (profileImageFile) {
         if (profileImageFile.size > 5 * 1024 * 1024) {
           alert("Image too large. Please select an image under 5MB.");
@@ -70,8 +68,6 @@ const ProfileSettings = () => {
         }
 
         const imageRef = ref(storage, `profileImages/${auth.currentUser.uid}`);
-
-        // ⚠️ Upload with timeout
         await uploadWithTimeout(imageRef, profileImageFile);
         photoURL = await getDownloadURL(imageRef);
       }
@@ -82,9 +78,9 @@ const ProfileSettings = () => {
 
       if (Object.keys(updateData).length > 0) {
         await updateProfile(auth.currentUser, updateData);
+        await auth.currentUser.reload();
       }
 
-      // 📌 Save to Firestore
       await setDoc(
         doc(db, "users", auth.currentUser.uid),
         {
@@ -92,6 +88,33 @@ const ProfileSettings = () => {
           location: location.trim(),
         },
         { merge: true }
+      );
+
+      const updatedFields = {};
+      if (bio.trim() !== "") updatedFields.bio = bio.trim();
+      if (location.trim() !== "") updatedFields.location = location.trim();
+      if (fullName.trim() !== "") updatedFields.displayName = fullName.trim();
+      if (photoURL) updatedFields.photoURL = photoURL;
+
+      const username =
+        currentUser.displayName?.trim() ||
+        currentUser.email?.trim() ||
+        currentUser.uid;
+
+      // console.log("Logging user activity:", {
+      //   userId: currentUser.uid,
+      //   username,
+      //   actionType: "Updated Profile",
+      //   updatedFields,
+      // });
+
+      await logUserActivity(
+        currentUser.uid,
+        username,
+        "Updated Profile",
+        { updatedFields },
+        null,
+        false
       );
 
       alert("✅ Profile updated successfully!");
@@ -106,7 +129,6 @@ const ProfileSettings = () => {
 
       <h2>Profile Settings</h2>
       <form onSubmit={handleSave} className="profile-form">
-
         <label>
           Profile Image
           <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -151,8 +173,6 @@ const ProfileSettings = () => {
 
         <button type="submit" className="btn-save">Save Changes</button>
       </form>
-
-    
     </div>
   );
 };

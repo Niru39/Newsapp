@@ -208,6 +208,11 @@ body.dark-mode .horoscope p strong  {
   margin-top:25px;
 }
 
+.newsletter h4{
+  color:#0056b3;
+  font-size: 1.2rem;
+}
+
 .newsletter input[type="email"] {
   padding: 8px;
   border: 1px solid #ced4da;
@@ -236,7 +241,44 @@ body.dark-mode .horoscope p strong  {
   font-size: 0.9rem;
   color: green;
 }
+.subscriber-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+  
+}
 
+
+.subscriber-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+}
+
+.subscriber-item span {
+  font-size: 1rem;
+  color: #444;
+  word-break: break-word;
+  flex-grow:1;
+}
+
+ .newsletter .subscriber-delete-button {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.newsletter .subscriber-delete-button:hover {
+  background-color: #c62828;
+}
 
 .widget-placeholder {
   background-color: #f1f1f1;
@@ -297,11 +339,22 @@ body.dark-mode .newsletter input[type="email"] {
   border: 1px solid #555;
   color: #f1f1f1;
 }
-
+body.dark-mode .newsletter h4,
+body.dark-mode  .newsletter .subscriber-item span{
+  color:#f1f1f1;
+}
 body.dark-mode .newsletter button {
   background-color: #3a9ff239;
   color: #f1f1f1;
 }
+
+body.dark-mode  .newsletter .subscriber-delete-button {
+  background-color: #e53935;
+}
+
+body.dark-mode .newsletter .subscriber-delete-button:hover {
+  background-color: #c62828;
+} 
 
 body.dark-mode .newsletter-msg {
   color: #4add51;

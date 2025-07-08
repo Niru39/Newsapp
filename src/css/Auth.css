@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 70vh;
   background-color: #f0f2f5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -17,7 +17,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
-  color: #000;
+  color: #444;
 }
 
 /* Close button (top right 'x') */
@@ -51,7 +51,7 @@
 /* Input fields */
 .auth-form-container input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 1rem;
   margin-bottom: 1.25rem;
   border: 1.5px solid #ced4da;
   border-radius: 8px;
@@ -70,7 +70,7 @@
 /* Submit button */
 .auth-form-container button[type="submit"] {
   width: 100%;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   background-color: #007bff;
   color: white;
   font-weight: 600;
@@ -119,7 +119,6 @@
   font-weight: 600;
   border: none;
   cursor: pointer;
-  user-select: none;
   transition: background-color 0.3s ease;
   color: white;
   font-size: 0.95rem;
@@ -135,6 +134,7 @@
 
 .social-btn.facebook {
   background-color: #4267b2;
+  margin-top: 10px;
 }
 
 .social-btn.facebook:hover:not(:disabled) {
@@ -148,7 +148,7 @@
 
 
 .auth-footer {
-  margin-top: 1.8rem;
+  margin-top: 0.8rem;
   font-size: 0.9rem;
   text-align: center;
   color: #555;
@@ -170,6 +170,7 @@
 
 body.dark-mode .auth-page {
   background-color: #1e1e2f;
+  border-radius: 6px;
 }
 
 body.dark-mode .auth-form-container {
@@ -202,8 +203,15 @@ body.dark-mode .auth-form-container button[type="submit"]:hover:not(:disabled) {
   background-color: #2277cc;
 }
 
+body.dark-mode .social-login-container p{
+  color: #f1f1f1;
+}
+
 body.dark-mode .auth-error {
   color: #ff6b6b;
+}
+body.dark-mode .auth-footer{
+  color: #f1f1f1;
 }
 
 body.dark-mode .close-button {
@@ -214,6 +222,65 @@ body.dark-mode .close-button:hover {
   color: #fff;
 }
 
+
+@media (min-width:320px) and (max-width: 480px) {
+  .auth-form-container {
+    padding: 1.5rem 1.2rem;
+    max-width: 95%;
+    font-size: 0.9rem;
+  }
+
+  .auth-form-container input {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .auth-form-container button[type="submit"] {
+    font-size: 1rem;
+  }
+
+  .social-btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .auth-form-container {
+    padding: 2rem;
+    max-width: 90%;
+    font-size: 1rem;
+  }
+
+  .auth-form-container input {
+    font-size: 1rem;
+  }
+
+  .auth-form-container button[type="submit"] {
+    font-size: 1.05rem;
+  }
+}
+
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .auth-form-container {
+    padding: 2.2rem;
+    max-width: 420px;
+    font-size: 1.05rem;
+  }
+
+  .auth-form-container input,
+  .auth-form-container button[type="submit"] {
+    font-size: 1rem;
+  }
+}
+
+
+@media (min-width: 1025px) {
+  .auth-form-container {
+    max-width: 400px;
+  }
+}
 
 
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import FeaturedArticle from "./FeaturedArticle";
 import SecondaryFeaturedArticles from "./SecondaryFeaturedArticles";
@@ -8,10 +7,10 @@ import MostRead from "./MostRead";
 import TrendingTags from "./TrendingTags";
 import HoroscopeWidget from "./HoroscopeWidget";
 import RecentUpdates from "./RecentUpdates";
-import TopCategories from "./TopCategories";
 import NewsletterSignup from "./NewsletterSignup";
 import ArticleGrid from "./ArticleGrid";
 import Spinner from "./Spinner";
+import PropTypes from "prop-types";
 import Pagination from "./Pagination";
 import StockWidget from "./StockWidget";
 import { auth, db } from "../userAuth/firebase";
@@ -34,12 +33,13 @@ const News = ({
 
   const [sections, setSections] = useState([]);
   const [articles, setArticles] = useState([]);
+  const [personalizedArticles, setPersonalizedArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [personalizedLoading, setPersonalizedLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const [searchQuery, setSearchQuery] = useState(query || "");
   const [newsApiFailed, setNewsApiFailed] = useState(false);
-
   const [userPrefs, setUserPrefs] = useState(null);
 
   const fallbackImage =
@@ -80,20 +80,93 @@ const News = ({
     fetchUserPreferences();
   }, [auth.currentUser]);
 
-  // Build query string using user preferences if available
-  const buildQueryFromPrefs = () => {
-    if (!userPrefs) return null;
+  // Fetch personalized news based on userPrefs
+  const fetchPersonalizedNews = async () => {
+    if (!userPrefs) {
+      setPersonalizedArticles([]);
+      return;
+    }
+    setPersonalizedLoading(true);
+    try {
+      const topics = userPrefs.topics || [];
+      const customKeywords = userPrefs.customKeywords || [];
+      let query = [...topics, ...customKeywords].join(" OR ");
+      if (!query) query = "general";
 
-    const topics = userPrefs.topics || [];
-    const customKeywords = userPrefs.customKeywords || [];
-    const combined = [...topics, ...customKeywords];
+      const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
+        query
+      )}&language=en&pageSize=20&apiKey=${apiKey}`;
 
-    if (combined.length === 0) return null;
+      console.log("Fetching personalized news with URL:", url);
 
-    return combined.join(" OR ");
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Personalized fetch failed");
+
+      const data = await response.json();
+      setPersonalizedArticles(data.articles || []);
+    } catch (error) {
+      console.error("Error fetching personalized news:", error);
+      setPersonalizedArticles([]);
+    } finally {
+      setPersonalizedLoading(false);
+    }
   };
 
-  // Fetch news using preferences if available, else fallback logic
+  // Fetch multiple homepage sections excluding categories from userPrefs
+  const fetchMultipleSections = async () => {
+    setLoading(true);
+    setProgress(10);
+    setNewsApiFailed(false);
+
+    // Build set of URLs from personalized articles to avoid duplicates
+    const personalizedUrls = new Set(personalizedArticles.map((a) => a.url));
+
+    // Extract valid categories from user preferences to exclude from homepage sections
+    const userPrefCategories = (userPrefs?.topics || [])
+      .map((t) => t.toLowerCase())
+      .filter((t) => validCategories.includes(t));
+
+    // Filter homepage categories to exclude user preferred categories
+    const homepageCategories = [
+      "general",
+      "business",
+      "technology",
+      "sports",
+      "health",
+      "entertainment",
+      "science",
+    ].filter((cat) => !userPrefCategories.includes(cat));
+
+    try {
+      const promises = homepageCategories.map(async (category) => {
+        const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&pageSize=5&apiKey=${apiKey}`;
+        console.log(`Fetching homepage section ${category} with URL:`, url);
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Failed to fetch ${category}`);
+        const data = await res.json();
+
+        // Filter out articles already shown in personalized section
+        const filteredArticles = (data.articles || []).filter(
+          (article) => !personalizedUrls.has(article.url)
+        );
+
+        return { category, articles: filteredArticles };
+      });
+
+      const results = await Promise.all(promises);
+      setSections(results);
+      setLoading(false);
+      setProgress(100);
+    } catch (error) {
+      console.error("Fetch multiple sections error:", error.message);
+      setNewsApiFailed(true);
+      setSections([]); // ensure layout still works
+      setLoading(false);
+      setProgress(100);
+    }
+  };
+
   const fetchNews = async (pageNum = 1) => {
     try {
       setProgress(10);
@@ -103,21 +176,15 @@ const News = ({
       let url = "";
       let queryToUse = "";
 
-      const prefQuery = buildQueryFromPrefs();
-
-      if (prefQuery) {
-        // Use user preferences keywords/topics for query
-        queryToUse = prefQuery;
-        url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
-          queryToUse
-        )}&language=en&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
-      } else if (categoryName) {
+      if (categoryName) {
         queryToUse = categoryName.toLowerCase();
-        url = validCategories.includes(queryToUse)
-          ? `https://newsapi.org/v2/top-headlines?country=${country}&category=${queryToUse}&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`
-          : `https://newsapi.org/v2/everything?q=${encodeURIComponent(
-              categoryName
-            )}&language=en&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+        if (validCategories.includes(queryToUse)) {
+          url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${queryToUse}&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+        } else {
+          url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
+            categoryName
+          )}&language=en&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+        }
       } else if (tagName) {
         queryToUse = tagName.toLowerCase();
         url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
@@ -125,15 +192,51 @@ const News = ({
         )}&language=en&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
       } else if (query) {
         queryToUse = query.toLowerCase();
-        url = validCategories.includes(queryToUse)
-          ? `https://newsapi.org/v2/top-headlines?country=${country}&category=${queryToUse}&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`
-          : `https://newsapi.org/v2/everything?q=${encodeURIComponent(
+        if (validCategories.includes(queryToUse)) {
+          url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${queryToUse}&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+        } else {
+          url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
+            queryToUse
+          )}&language=en&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+        }
+      } else if (userPrefs) {
+        // fallback to user preferences only if no category/tag/query params
+        const topics = userPrefs.topics || [];
+        const customKeywords = userPrefs.customKeywords || [];
+
+        if (topics.length > 0 && customKeywords.length === 0) {
+          const category = topics[0].toLowerCase();
+          const validCategory = validCategories.includes(category)
+            ? category
+            : null;
+
+          if (validCategory) {
+            queryToUse = validCategory;
+            url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${validCategory}&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+          } else {
+            queryToUse = topics.join(" OR ");
+            url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
               queryToUse
             )}&language=en&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+          }
+        } else if (customKeywords.length > 0) {
+          const combinedQuery = [...topics, ...customKeywords].join(" OR ");
+          queryToUse = combinedQuery;
+          url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(
+            combinedQuery
+          )}&language=en&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+        } else {
+          queryToUse = "general";
+          url = `https://newsapi.org/v2/top-headlines?country=${country}&category=general&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
+        }
       } else {
+        // default to general top headlines if nothing else matches
         queryToUse = "general";
         url = `https://newsapi.org/v2/top-headlines?country=${country}&category=general&page=${pageNum}&pageSize=${pageSize}&apiKey=${apiKey}`;
       }
+
+      console.log("FetchNews - category/tag/query:", queryToUse);
+      console.log("FetchNews - URL:", url);
 
       const response = await fetch(url);
       setProgress(50);
@@ -157,46 +260,18 @@ const News = ({
     }
   };
 
-  // Fetch multiple sections for homepage (no change here)
-  const fetchMultipleSections = async () => {
-    setLoading(true);
-    setProgress(10);
-    setNewsApiFailed(false);
-    const categories = [
-      "general",
-      "business",
-      "technology",
-      "sports",
-      "health",
-      "entertainment",
-      "science",
-    ];
-    try {
-      const promises = categories.map(async (category) => {
-        const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&pageSize=5&apiKey=${apiKey}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Failed to fetch ${category}`);
-        const data = await res.json();
-        return { category, articles: data.articles || [] };
-      });
-
-      const results = await Promise.all(promises);
-      setSections(results);
-      setLoading(false);
-      setProgress(100);
-    } catch (error) {
-      console.error("Fetch multiple sections error:", error.message);
-      setNewsApiFailed(true);
-      setSections([]); // ensure layout still works
-      setLoading(false);
-      setProgress(100);
-    }
-  };
-
   // Main effect: fetch news or sections based on route and userPrefs
   useEffect(() => {
     if (location.pathname === "/") {
-      fetchMultipleSections();
+      if (userPrefs) {
+        // Fetch personalized news first, then fetch homepage sections excluding those categories
+        (async () => {
+          await fetchPersonalizedNews();
+          await fetchMultipleSections();
+        })();
+      } else {
+        fetchMultipleSections();
+      }
     } else {
       const pageFromUrl = parseInt(searchParams.get("page")) || 1;
       fetchNews(pageFromUrl);
@@ -207,7 +282,8 @@ const News = ({
     categoryName,
     tagName,
     searchParams.toString(),
-    userPrefs, // refetch news when userPrefs change
+    userPrefs,
+    personalizedArticles.length,
   ]);
 
   const handlePageChange = (newPage) => {
@@ -222,9 +298,12 @@ const News = ({
     <div className="news-page-container custom-layout">
       {location.pathname === "/" ? (
         <>
-          {loading && <Spinner mode={mode} />}
-          {!loading && (
-            <main>
+          {(loading || personalizedLoading) && <Spinner mode={mode} />}
+          {!loading && !personalizedLoading && (
+            <main >
+           
+
+              {/* Original homepage sections, filtered */}
               <div className="row featured-mostread">
                 <div className="left">
                   {getSection("general").length > 0 ? (
@@ -252,18 +331,26 @@ const News = ({
                   tags={["COVID", "Elections", "Cannes", "Marvel", "Finance"]}
                 />
               </div>
+                 {/* Personalized News Section */}
+              {personalizedArticles.length > 0 && (
+                <section className="personalized-news-section">
+                  <h2>Your Personalized News</h2>
+                  <ArticleGrid
+                    articles={personalizedArticles}
+                    fallbackImage={fallbackImage}
+                  />
+                </section>
+              )}
 
-               <div className="row full-width">
-                  {getSection("business").length > 0 && (
-                    <NewsSection
-                      category="business"
-                      articles={getSection("business")}
-                      fallbackImage={fallbackImage}
-                    />
-                  )}
-                  </div>
-
-            
+              <div className="row full-width">
+                {getSection("business").length > 0 && (
+                  <NewsSection
+                    category="business"
+                    articles={getSection("business")}
+                    fallbackImage={fallbackImage}
+                  />
+                )}
+              </div>
 
               <div className="row full-width">
                 <StockWidget stockapiKey={stockapiKey} />
@@ -284,15 +371,15 @@ const News = ({
                 </div>
               </div>
 
-               <div className="row full-width">
-                  {getSection("sports").length > 0 && (
-                    <NewsSection
-                      category="sports"
-                      articles={getSection("sports")}
-                      fallbackImage={fallbackImage}
-                    />
-                  )}
-                  </div>
+              <div className="row full-width">
+                {getSection("sports").length > 0 && (
+                  <NewsSection
+                    category="sports"
+                    articles={getSection("sports")}
+                    fallbackImage={fallbackImage}
+                  />
+                )}
+              </div>
 
               <div className="row health-recent">
                 <div className="left">
@@ -324,15 +411,15 @@ const News = ({
                 </div>
               </div>
 
-               <div className="row full-width">
-                  {getSection("entertainment").length > 0 && (
-                    <NewsSection
-                      category="entertainment"
-                      articles={getSection("entertainment")}
-                      fallbackImage={fallbackImage}
-                    />
-                  )}
-                  </div>
+              <div className="row full-width">
+                {getSection("entertainment").length > 0 && (
+                  <NewsSection
+                    category="entertainment"
+                    articles={getSection("entertainment")}
+                    fallbackImage={fallbackImage}
+                  />
+                )}
+              </div>
             </main>
           )}
         </>
@@ -372,8 +459,9 @@ News.propTypes = {
   pageSize: PropTypes.number,
   setProgress: PropTypes.func.isRequired,
   mode: PropTypes.string,
-  weatherapiKey: PropTypes.string,
+  horoscopeapiKey: PropTypes.string,
   stockapiKey: PropTypes.string,
 };
+
 
 export default News;

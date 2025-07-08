@@ -28,7 +28,7 @@ const StockWidget = ({ stockapiKey }) => {
     };
 
     fetchAllStocks();
-    const interval = setInterval(fetchAllStocks, 3000); 
+    const interval = setInterval(fetchAllStocks, 10000); 
     return () => clearInterval(interval);
   }, [stockapiKey]);
 

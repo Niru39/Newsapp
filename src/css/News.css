@@ -5,6 +5,76 @@
   gap:1rem;
 }
 
+.news-page-container h1{
+  color:#0056b3;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.personalized-news-section {
+  margin: 2rem 0;
+  padding: 1rem;
+  background-color: #f1f1f1; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.personalized-news-article {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.personalized-news-section h2{
+  color:#0056b3;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom:20px;
+  text-align: left;
+  text-decoration: none;
+   
+
+}
+
+.personalized-news-article:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.personalized-news-article a {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+.personalized-news-article a:hover {
+  text-decoration: underline;
+}
+
+.personalized-news-article h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.7rem 0 0.5rem 0;
+  padding: 0 0.7rem;
+  color: #444;
+}
+
+.personalized-news-article p {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0 0.7rem 0.7rem 0.7rem;
+  flex-grow: 1;
+}
+
+.personalized-news-article small {
+  font-size: 0.8rem;
+  color: #999;
+  padding: 0 0.7rem 0.7rem 0.7rem;
+}
+
+
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -53,7 +123,7 @@
 .section-header h2 {
   font-size: 1.5rem;
   font-weight: bold;
-  margin:  0;
+  margin:0;
   text-align: left;
   text-decoration: none;
    color:#0056b3;
@@ -167,7 +237,7 @@
 }
 
 
-.news-grid {
+.news-grid, .personalized-news-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
@@ -226,12 +296,13 @@ body.dark-mode {
 body.dark-mode .news-main h1,
 body.dark-mode .news-title,
 body.dark-mode .end-message,
-body.dark-mode .section-header h2 {
+body.dark-mode .section-header h2,
+body.dark-mode .personalized-news-section h2 {
   color: #f1f1f1;
 }
 
 body.dark-mode .news-page-container,
-body.dark-mode .news-main {
+body.dark-mode .news-main , body.dark-mode .personalized-news-section {
   background-color: #1e1e1e;
 } 
 

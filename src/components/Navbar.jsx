@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthForm from '../userAuth/AuthForm';  
+import AuthForm from '../userAuth/AuthForm';
 import { signOut } from 'firebase/auth';
 import { auth, db } from '../userAuth/firebase';
 import { useAuth } from '../userAuth/AuthContext';
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import { logUserActivity } from '../userAuth/LogActivity';
 import '../css/Navbar.css';
 import '../App.css';
+
 
 const Navbar = ({ toggleMode, mode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -70,10 +72,27 @@ const Navbar = ({ toggleMode, mode }) => {
   };
 
   const handleLogout = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const uid = user.uid;
+    const username = user.displayName || user.email || "Unknown";
+
+
+    await logUserActivity(
+      uid,
+      username,
+      "user_logout",
+      {
+        username: username
+      }, null,
+      false);
+
     await signOut(auth);
     setShowAuthDropdown(false);
     navigate('/');
   };
+
 
   return (
     <nav className="navbar">
@@ -92,9 +111,6 @@ const Navbar = ({ toggleMode, mode }) => {
 
         <div id="navbar-links" className={`navbar-links ${isMenuOpen ? 'active' : ''}`}>
           <Link className="nav-link" to="/" onClick={closeMenu}>Home</Link>
-          {isAdmin && (
-            <Link className="nav-link" to="/admin" onClick={closeMenu}>Admin Panel</Link>
-          )}
           <Link className="nav-link" to="/category/business" onClick={closeMenu}>Business</Link>
           <Link className="nav-link" to="/category/entertainment" onClick={closeMenu}>Entertainment</Link>
           <Link className="nav-link" to="/category/health" onClick={closeMenu}>Health</Link>
@@ -128,23 +144,12 @@ const Navbar = ({ toggleMode, mode }) => {
               <div className="auth-dropdown profile-menu">
                 <Link to="/preferences" onClick={() => setShowAuthDropdown(false)}>Preferences</Link>
                 <Link to="/saved" onClick={() => setShowAuthDropdown(false)}>Saved Articles</Link>
-                <Link to="/profile-settings" onClick={() => setShowAuthDropdown(false)}>Profile Setting</Link>
 
-                <div className="user-activity-section">
-                  <h4>Recent Activity</h4>
-                  {recentActivities.length === 0 ? (
-                    <p>No recent activity.</p>
-                  ) : (
-                    <ul>
-                      {recentActivities.map((activity, i) => (
-                        <li key={i}>
-                          <small>{activity.timestamp?.toDate ? activity.timestamp.toDate().toLocaleString() : new Date(activity.timestamp).toLocaleString()}</small><br />
-                          <strong>{activity.type}</strong>: {activity.details || "No details"}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                <Link to="/profile-settings" onClick={() => setShowAuthDropdown(false)}>Profile Setting</Link>
+                {isAdmin && (
+                  <Link className="nav-link" to="/admin" onClick={closeMenu}>Admin Panel</Link>
+                )}
+                <Link to="/user-activity" onClick={() => setShowAuthDropdown(false)}>UserActivity</Link>
 
                 <button onClick={handleLogout} type="button">Logout</button>
               </div>

@@ -136,9 +136,10 @@ const App = () => {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/preferences" element={<UserProfile onClose={() => setShowAuthDropdown(false)} />} />
           <Route path="/saved" element={<SavedArticles />} />
-          <Route path="/my-activity" element={<UserActivity />} />
+          <Route path="/user-activity" element={<UserActivity />} />
 
           <Route path="/profile-settings" element={<ProfileSettings onClose={() => setShowAuthDropdown(false)}/>} />
+
 
 
           {/* Admin-only pages */}
